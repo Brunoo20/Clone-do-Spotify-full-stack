@@ -1,0 +1,25 @@
+{
+    "name": "bruno/spotify",
+    "autoload": {
+        "psr-4": {
+            "spotify\\": ""
+        }
+    },
+    "authors": [
+        {
+            "name": "Bruno dev",
+            "email": "brunoomendes20@gmail.com"
+        }
+    ],
+    "require": {
+        "jwilsson/spotify-web-api-php": "^6.2"
+    }
+}
+
+
+
+
+
+
+   
+

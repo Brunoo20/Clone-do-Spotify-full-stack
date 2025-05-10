@@ -1,0 +1,2516 @@
+* {
+    margin: 0;
+    padding: 0;
+    font-family: "Poppins", sans-serif;
+    box-sizing: border-box;
+}
+
+::-webkit-scrollbar {
+    width: 10px;
+}
+
+:-webkit-scrollbar-track {
+    background: #222;
+    border-radius: 10px;
+    box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.3);
+}
+
+:-webkit-scrollbar-thumb {
+    background: linear-gradient(to bottom, #888, #555);
+    border-radius: 10px;
+
+}
+
+body {
+    background-color: #000;
+    color: #fff;
+}
+
+.head {
+    flex-grow: 1;
+    overflow-y: auto;
+}
+
+.header7 {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 2px;
+    display: flex;
+    align-items: center;
+    padding: 0.5rem;
+    background-color: #000;
+    justify-content: space-between;
+}
+
+.hut{
+    display: flex;
+    margin-left: 40rem;
+}
+
+.perfil {
+    border-radius: 50%;
+    background-color: #1f1f1f;
+    font-weight: 700;
+    cursor: pointer;
+    flex-shrink: 0;
+    height: 48px;
+    width: 48px;
+    box-sizing: border-box;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 290px;
+    position: relative;
+}
+
+.perfil button {
+    background-color: #f16c9a;
+    border: 0;
+    line-height: 32px;
+    font-weight: 700;
+    border-radius: 50%;
+    height: 32px;
+    width: 32px;
+    cursor: pointer;
+}
+
+.perfil button:hover {
+    transform: scale(1.04);
+}
+
+.menu {
+    display: none;
+    z-index: 9999;
+    position: absolute;
+    background-color: #1f1f1f;
+    top: 100%;
+    right: 0;
+    inset: 0 0 auto auto;
+    margin: 0px;
+    transform: translate3d(-9.9375, 65px, 0px);
+    border-radius: 2px;
+}
+
+
+.menu a {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 15px 15px;
+    text-decoration: none;
+    color: #ffffffe6;
+    font-size: 0.875rem;
+    font-weight: 400;
+
+}
+
+.menu a span svg {
+    fill: #b3b3b3;
+    width: 16px;
+    height: 16px;
+    margin-left: 10px;
+}
+
+.menu a:hover {
+    background-color: #444;
+}
+
+.menu .sair {
+    border-top: 1px solid #444;
+}
+
+.iconSpotify {
+    margin-left: 1rem;
+
+
+}
+
+.iconSpotify svg {
+    width: 32px;
+    height: 32px;
+    fill: #fff;
+    cursor: pointer;
+
+}
+
+
+
+.house {
+    background-color: #242424;
+    padding: 0.7rem;
+    cursor: pointer;
+    border-radius: 50%;
+    margin-right: 0.5rem;
+    transition: 0.4s;
+    width: 48px;
+    height: 48px;
+
+}
+
+.house svg {
+    width: 24px;
+    height: 24px;
+    fill: #fff;
+
+}
+
+.house:hover {
+    transform: scale(1.04);
+    fill: #fff;
+
+}
+
+
+
+.input7 {
+    display: flex;
+    align-items: center;
+    background-color: #242424;
+    padding: 10px;
+    border-radius: 1.5rem;
+    width: 30rem;
+    margin-right: 21.5rem;
+}
+
+.input7 svg {
+    width: 24px;
+    height: 24px;
+    fill: #b3b3b3;
+
+}
+
+.search svg {
+    margin-right: 1rem;
+}
+
+.cest svg {
+    margin-left: 1rem;
+    margin-right: 0.2rem;
+}
+
+.input7 input {
+    background-color: transparent;
+    border: none;
+    color: #fff;
+    width: 100%;
+    margin-left: 0.5rem;
+    outline: none;
+}
+
+.input7:focus-within {
+    outline: 2px solid #fff;
+    box-shadow: 0 0 2px 2px #fff;
+    transition: 0.4s;
+}
+
+.input7 input::placeholder {
+    color: #b3b3b3;
+    font-size: 1rem;
+    font-weight: 500;
+}
+
+.vertical-line {
+    border-right: 1px solid #7c7c7c;
+    height: 25px;
+}
+
+.search:hover svg {
+    fill: #fff;
+    transition: 0.4s;
+    cursor: pointer;
+
+}
+
+.cest:hover svg {
+    fill: #fff;
+    transition: 0.4s;
+    cursor: pointer;
+}
+
+.input7:hover {
+    fill: #fff;
+    background: #302f2f;
+    transition: 0.4s;
+}
+
+.container7 {
+    display: flex;
+}
+
+.sidebar7 {
+    width: 25rem;
+    height: 80vh;
+    max-width: 1314px;
+    min-width: 4rem;
+    background-color: #121212;
+    padding-top: 1rem;
+    padding-left: 0.7rem;
+    padding-bottom: 5.625rem;
+    margin-left: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    white-space: nowrap;
+    margin-top: 70px;
+    border-radius: 10px;
+    position: relative;
+    z-index: 9;
+    flex-shrink: 0;
+    overflow-y: auto;
+
+}
+
+/* Criar a borda invisível para redimensionamento */
+.resize-border {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: grab;
+    height: 80vh;
+    /* Ajuste para corresponder à altura do sidebar7 */
+    position: absolute;
+    top: 70px;
+    /* Ajuste para corresponder ao margin-top do sidebar7 */
+    left: calc(25rem + 1rem);
+    /* Posiciona a borda à direita do sidebar7 */
+    width: 10px;
+    /* Largura ajustada para a linha */
+    z-index: 20;
+    transition: opacity .15s ease-out;
+    opacity: 0;
+}
+
+.resize-border::after {
+    background-color: #7c7c7c;
+    border-radius: 1px;
+    content: "";
+    height: calc(100% - 16px);
+    transition: background-color .15s ease-out, opacity .25s ease-out;
+    width: 1px;
+    transform: translateX(-50%);
+
+}
+
+
+.hidden-visually {
+    border: 0;
+    height: 1px;
+    width: 1px;
+    margin: 0;
+    overflow: hidden;
+    padding: 0;
+    position: absolute;
+    width: 1px;
+    clip: rect(0 0 0 0);
+}
+
+label.hidden-visually {
+    cursor: default;
+}
+
+.resizer-input {
+    color: #b3b3b3;
+    text-transform: none;
+}
+
+
+.nav-library7 {
+    display: flex;
+    align-items: center;
+    gap: 0.62rem;
+}
+
+.dad {
+    display: flex;
+    align-items: center;
+    gap: 0.62rem;
+}
+
+.book {
+    margin-left: 10px;
+}
+
+.book svg {
+    fill: #b3b3b3;
+    width: 24px;
+    height: 24px;
+
+}
+
+.book-empty {
+    display: none;
+    margin-left: 10px;
+}
+
+.book-empty svg {
+    fill: #b3b3b3;
+    width: 24px;
+    height: 24px;
+}
+
+.nav-library7 .library {
+    color: #b3b3b3;
+    font-weight: 600;
+}
+
+.nav-playlist {
+    margin-top: 30px;
+}
+
+.nav-podcast {
+    margin-top: 20px;
+}
+
+.nav-playlist,
+.nav-podcast {
+    background-color: #1b1a1a;
+    padding: 16px;
+    border-radius: 8px;
+    margin-right: 10px;
+
+}
+
+.nav-playlist button,
+.nav-podcast button {
+    background-color: #000;
+    color: #ffffffe6;
+    border: none;
+    font-weight: 600;
+    padding: 6px 10px;
+    margin-top: 16px;
+    cursor: pointer;
+    font-size: 0.875rem;
+    border-radius: 20px;
+    padding: 10px 13px 10px 13px;
+}
+
+.nav-playlist h5,
+.nav-podcast h5 {
+    font-weight: 600;
+    font-size: 0.965rem;
+    margin-bottom: 10px;
+}
+
+.nav-playlist p,
+.nav-podcast p {
+    font-size: 12px;
+    font-weight: 600;
+    color: #ffffffe6;
+}
+
+.nav-playlist button:hover,
+.nav-podcast button:hover {
+    transform: scale(1.04);
+    background-color: #1f1f1f;
+}
+
+
+
+.dad:hover svg,
+.dad:hover p {
+    color: #fff;
+    fill: #fff;
+    transition: 0.4s;
+}
+
+.plus-simbol {
+    margin-left: auto;
+    margin-right: 20px;
+
+}
+
+.arrow {
+    margin-right: 10px;
+    display: inline-block;
+}
+
+.arrow.rotated {
+    transform: rotate(180deg);
+}
+
+.plus-simbol svg {
+    fill: #b3b3b3;
+    width: 18px;
+    height: 18px;
+    z-index: 6;
+}
+
+.arrow svg {
+    fill: #b3b3b3;
+    width: 18px;
+    height: 18px;
+    z-index: 7;
+}
+
+
+.plus-simbol,
+.arrow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 25px;
+    height: 25px;
+    position: relative;
+    cursor: pointer;
+}
+
+.arrow:hover svg,
+.plus-simbol:hover svg {
+    fill: #fff;
+
+}
+
+
+.arrow:hover::before,
+.plus-simbol:hover::before {
+    content: '';
+    position: absolute;
+    top: -7px;
+    left: -7px;
+    right: -7px;
+    bottom: -7px;
+    border-radius: 50%;
+    pointer-events: none;
+    background-color: #252525;
+    transition: all 0.3s ease;
+    z-index: 5;
+
+}
+
+.create {
+    display: none;
+    z-index: 9999;
+    position: absolute;
+    inset: 0px 0px auto auto;
+    margin: 0px;
+    transform: translate3d(-55.2969px, 56px, 0px);
+}
+
+.create ul {
+    -webkit-app-region: no-drag;
+    background-color: #282828;
+    border-radius: 4px;
+    max-height: calc(100vh -24px);
+    max-width: 350px;
+    min-width: 160px;
+    overflow-y: auto;
+    padding: 4px;
+    list-style: none;
+
+}
+
+.create li {
+    display: list-item;
+    text-align: -webkit-match-parent;
+    unicode-bidi: isolate;
+}
+
+.create button {
+    height: 44px;
+    display: flex;
+    gap: 12px;
+    position: relative;
+    -webkit-box-pack: justify;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px;
+    text-decoration: none;
+    border: 0;
+    border-radius: 2px;
+    cursor: default;
+    padding-inline-end: 8px;
+    text-align: start;
+    width: 100%;
+    background: transparent;
+}
+
+.create svg {
+    fill: #ffffffe6;
+    width: 16px;
+    height: 16px;
+}
+
+.create span {
+    -webkit-box-flex: 1;
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 0.875rem;
+    margin-block: 0;
+    font-weight: 400;
+    color: #ffffffe6;
+
+}
+
+.create button:hover {
+    background-color: #444;
+}
+
+.nav-filtro {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    overflow-x: scroll;
+    /* Permite rolagem horizontal */
+    white-space: nowrap;
+    /* Evita quebra de linha */
+    scrollbar-width: none;
+    /* Esconde a barra de rolagem em Firefox */
+    -ms-overflow-style: none;
+    /* Esconde a barra de rolagem em IE e Edge */
+    scroll-behavior: smooth;
+    /* Adiciona rolagem suave */
+
+}
+
+/*.nav-filtro::-webkit-scrollbar {
+    display: none;
+    /* Esconde a barra de rolagem em Chrome, Safari e Opera 
+}
+
+.nav-filtro-son {
+    margin-top: 15px;
+    background-color: #ffffff1a;
+    border: none;
+    border-radius: 15px;
+    color: #fff;
+    font-weight: 550;
+    padding: 5px;
+    margin-inline-end: 8px;
+    display: inline-flex;
+    vertical-align: middle;
+    max-inline-size: 100%;
+    letter-spacing: inherit;
+    cursor: pointer;
+   
+}
+
+.playlist,
+.artistas,
+.albuns,
+.podcasts {
+    display: inline-flex;
+    min-inline-size: 0px;
+    -webkit-box-align: center;
+    align-items: center;
+    padding-block: 4px;
+    padding-inline: 12px;
+    display: flex;
+    z-index: 8;
+    padding-left: 5px;
+   
+}
+
+
+.nav-filtro-son:hover{
+    background-color: #ffffff2c;
+    transition: 0.6s;
+}
+
+
+.general {
+    bottom: 0;
+    display: flex;
+    position: absolute;
+    top: 0;
+    right: 0;
+    left: 0;
+    -webkit-box-pack: justify;
+    justify-content: space-between;
+    pointer-events: none;
+    margin-top: 60px;
+
+}
+
+.button1 {
+    display: none;
+    border: none;
+    border-radius: 50%;
+    display: flex;
+    -webkit-box-pack: center;
+    justify-content: center;
+    -webkit-box-pack: center;
+    align-items: center;
+    background-color: #1f1f1f;
+    height: 32px;
+    width: 32px;
+    translate: 0;
+    position: relative;
+    z-index: 9;
+    cursor: pointer;
+    pointer-events: auto;
+    
+}
+
+.button2 {
+    border: none;
+    border-radius: 50%;
+    display: flex;
+    -webkit-box-pack: center;
+    justify-content: center;
+    -webkit-box-pack: center;
+    align-items: center;
+    background-color: #1f1f1f;
+    height: 32px;
+    width: 32px;
+    translate: 0;
+    position: relative;
+    z-index: 9;
+    cursor: pointer;
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.button1 svg,
+.button2 svg {
+    fill: #b3b3b3;
+    width: 16px;
+    height: 16px;
+    z-index: 2;
+
+}
+
+.button1:hover,
+.button2:hover {
+    background-color: #121212
+}
+
+.searchBox {
+    display: flex;
+    padding-inline-end: 4px;
+    -webkit-box-align: center;
+    align-items: center;
+    -webkit-box-pack: justify;
+    justify-content: space-between;
+    padding: 2px 8px 0;
+    vertical-align: baseline;
+
+}
+
+.search2 {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 25px;
+    height: 25px;
+    margin-top: 15px;
+    cursor: pointer;
+    position: relative;
+}
+
+.search2 svg {
+    fill: #ffffffb3;
+    width: 16px;
+    height: 16px;
+    z-index: 2;
+    transition: fill 0.3s ease;
+    z-index: 6;
+    position: relative;
+
+}
+
+.search2:hover svg {
+    fill: #fff;
+
+}
+
+
+.search2:hover::before {
+    content: '';
+    position: absolute;
+    top: -6px;
+    left: -6px;
+    right: -6px;
+    bottom: -6px;
+    fill: #fff;
+    border-radius: 50%;
+    pointer-events: none;
+    background-color: #252525;
+    transition: all 0.3s ease;
+    z-index: 5;
+
+}
+
+.recentes button {
+    margin-top: 9px;
+    border: none;
+    display: flex;
+    box-sizing: border-box;
+    cursor: pointer;
+    text-decoration: none;
+    text-align: center;
+    text-transform: none;
+    vertical-align: middle;
+    padding-block: 4px;
+    padding-inline: 12px;
+    align-items: center;
+    justify-content: center;
+    background-color: transparent;
+    gap: 6px;
+    position: relative;
+    z-index: 1;
+
+}
+
+
+
+.re {
+    font-size: 0.875rem;
+    font-weight: 400;
+    color: #ffffffb3;
+    display: flex;
+    align-items: center;
+    position: relative;
+
+}
+
+.IconWrapper {
+    display: flex;
+    justify-content: center;
+}
+
+.IconWrapper svg {
+    fill: #b3b3b3;
+    width: 16px;
+    height: 16px;
+    font-weight: 700;
+
+}
+
+.recentes button:hover {
+    transform: scale(1.05);
+    /* Aumenta a escala para dar a sensação de vir para frente 
+    z-index: 2;
+    /* Aumenta o z-index para ficar acima dos outros elementos 
+
+}
+
+.recentes button:hover .re {
+    color: #fff;
+    position: relative;
+
+}
+
+.recentes button:hover .IconWrapper svg {
+    fill: #fff;
+    position: relative;
+
+}*/
+
+
+.main-content {
+
+    flex-grow: 1;
+    margin-left: 0.5rem;
+    margin-right: 1rem;
+    margin-top: 70px;
+    border-radius: 0.7rem;
+    height: 80vh;
+    position: relative;
+    z-index: 11;
+    background: linear-gradient(to bottom, #242323, #0e0d0d);
+    overflow-y: auto;
+    overflow-x: hidden;
+
+}
+
+.main-content.searched {
+    background: linear-gradient(to bottom, #121212, #121212);
+}
+
+.main-content::-webkit-scrollbar {
+    width: 10px;
+    /* Largura da barra */
+}
+
+.main-content::-webkit-scrollbar-thumb {
+    background-color: #444;
+
+}
+
+.main-content::-webkit-scrollbar-thumb:hover {
+    background-color: #b3b3b3;
+}
+
+.content {
+    margin-top: 10px;
+}
+
+.info-content {
+    margin-left: 20px;
+    display: flex;
+    gap: 5px;
+    margin-top: 20px;
+
+}
+
+.info-content div {
+    background-color: #ffffff1a;
+    border: none;
+    border-radius: 15px;
+    font-weight: 400;
+    color: #fff;
+    padding: 10px 12px 10px 12px;
+    margin-inline-end: 8px;
+    display: inline-flex;
+    vertical-align: middle;
+    max-inline-size: 100%;
+    white-space: nowrap;
+    letter-spacing: inherit;
+    cursor: pointer;
+    font-size: 0.875rem;
+}
+
+.info-content div:hover {
+    background-color: #302f2f;
+}
+
+
+
+.popular-artists-container,
+.episodes-podcasts-container,
+.new-albums-container,
+.recently-played-container {
+    padding-left: 1.25rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.content__link-All-popular-artists,
+.content__link-All-episodes-podcasts,
+.content__link-All-new-albums,
+.content__link-All-recently-played {
+    color: #b3b3b3;
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 0.875rem;
+    margin-right: 40px;
+    margin-top: 60px;
+    cursor: pointer;
+
+}
+
+.content__link-All-popular-artists:hover,
+.content__link-All-episodes-podcasts:hover,
+.content__link-All-new-albums:hover,
+.content__link-All-recently-played:hover {
+    text-decoration: underline;
+}
+
+.content__link-All-popular-artists:hover,
+.content__link-All-episodes-podcasts:hover,
+.content__link-All-new-albums:hover,
+.content__link-All-recently-played:hover {
+    text-decoration: underline;
+    text-decoration-color: #fff;
+
+}
+
+
+.content__texts h2 {
+    margin-top: 15px;
+
+}
+
+
+/* Seção para estilizar "Artistas Ppulares", "Episódios de Podcasts", "Novos Álbuns"*/
+
+.section-title.popular-artists,
+.section-title.episodes-podcasts,
+.section-title.new-albums,
+.section-title.recently-played {
+    margin-top: 50px;
+    margin-left: 10px;
+}
+
+.section-title.popular-artists2,
+.section-title.episodes-podcasts2,
+.section-title.new-albums2,
+.section-title.recently-played2 {
+    display: none;
+    color: #fff;
+    font-weight: 700;
+    margin-right: 10px;
+    padding: 20px;
+    margin-top: 50px;
+    font-size: 2.0rem;
+}
+
+.section-title.artists:hover,
+.section-title.albums:hover,
+.section-title.playlists:hover,
+.section-title.popular-artists:hover,
+.section-title.episodes-podcasts:hover,
+.section-title.new-albums:hover,
+.section-title.recently-played2:hover {
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+
+
+.artists-grid,
+.albums-grid,
+.playlists-grid,
+.popular-artists-grid,
+.episodes-podcasts-grid,
+.new-albums-grid,
+.recently-played-grid {
+    padding-left: 1.25rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    /* Cria colunas automáticas com largura mínima de 160px */
+    gap: 5px;
+    justify-items: center;
+    /* Centraliza os cards horizontalmente no grid */
+
+}
+
+.artist-card,
+.popular-artists-card,
+.recently-played-card {
+    width: 180px;
+    /* Largura fixa para todos os cards */
+    border-radius: 8px;
+    text-align: center;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    /* Alinha os itens no topo, evitando espaçamentos extras */
+    overflow: hidden;
+    margin: 10px;
+    /* Espaçamento entre os cards no grid*/
+    padding: 20px 0px 20px 10px;
+    min-height: 200px;
+}
+
+
+.artist-card img,
+.popular-artists-card img,
+.recently-played-card img {
+    width: 160px;
+    height: 160px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+}
+
+
+
+.artist-card a,
+.popular-artists-card a,
+.recently-played-card a {
+    margin-top: 10px;
+    font-size: 1rem;
+    display: flex;
+    justify-content: flex-start;
+    color: #fff;
+    text-decoration: none;
+}
+
+.artist-name:hover {
+    text-decoration: underline;
+    text-decoration-color: #fff;
+}
+
+.artist-card p,
+.playlists-card p,
+.popular-artists-card p,
+.episodes-podcasts-card p,
+.new-albums-card p,
+.recently-played-card p {
+    font-size: 0.875rem;
+    color: #b3b3b3;
+    font-weight: 400;
+    display: flex;
+    justify-content: flex-start;
+    margin-top: 10px;
+}
+
+.artist-card .play-button-artist,
+.popular-artists-card .play-button-popular-artists,
+.recently-played-card .play-button-recently-played-card {
+    background-color: transparent;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    margin-left: 100px;
+    margin-top: 110px;
+}
+
+
+.albums-card,
+.playlists-card,
+.episodes-podcasts-card,
+.new-albums-card {
+    width: 180px;
+    /* Largura fixa para todos os cards */
+    border-radius: 8px;
+    text-align: center;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    /* Alinha os itens no topo, evitando espaçamentos extras */
+    overflow: hidden;
+    margin: 10px;
+    /* Espaçamento entre os cards no grid*/
+    padding: 20px 0px 10px 10px
+}
+
+.artist-card:hover,
+.albums-card:hover,
+.playlists-card:hover,
+.popular-artists-card:hover,
+.episodes-podcasts-card:hover,
+.new-albums-card:hover,
+.recently-played-card:hover {
+    background-color: #282828;
+}
+
+
+.albums-card img,
+.playlists-card img,
+.episodes-podcasts-card img,
+.new-albums-card img {
+    width: 160px;
+    height: 160px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+    object-fit: cover;
+}
+
+
+
+.albums-card a,
+.playlists-card a,
+.episodes-podcasts-card a,
+.new-albums-card a {
+    margin-top: 10px;
+    font-size: 1rem;
+    display: flex;
+    justify-content: flex-start;
+}
+
+.albums-card a:hover,
+.playlists-card a:hover,
+.episodes-podcasts-card a:hover,
+.new-albums-card a:hover {
+    text-decoration: underline;
+}
+
+
+.album-details,
+.episodes-podcasts-details {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    font-weight: 400;
+    margin-top: 5px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: #b3b3b3;
+
+}
+
+.album-details a,
+.episodes-podcasts-details a {
+    margin-bottom: 10px;
+    font-size: 0.875rem;
+}
+
+.album-details p,
+.episodes-podcasts-details p {
+    font-size: 0.875rem;
+
+}
+
+.big-dot::after {
+    content: "•";
+    font-size: 12px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 3px 3px 0 4px;
+}
+
+.big-dot2::after {
+    content: "•";
+    font-size: 12px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 11px 3px 0 4px;
+}
+
+
+.albums-card .play-button-album,
+.playlists-card .play-button-playlist,
+.episodes-podcasts-card .play-button-episodes-podcasts,
+.new-albums-card .play-button-new-albums {
+    background-color: transparent;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    margin-left: 100px;
+    margin-top: 100px;
+
+
+}
+
+
+.artist-card svg,
+.albums-card svg,
+.playlists-card svg,
+.popular-artists-card svg,
+.episodes-podcasts-card svg,
+.new-albums-card svg,
+.recently-played-card svg {
+    display: none;
+    fill: #000;
+    width: 20px;
+    height: 20px;
+}
+
+
+.episodes-podcasts-card .play-button-episodes-podcasts .play-icon-podcasts,
+.episodes-podcasts-card .play-button-episodes-podcasts .pause-icon-podcasts {
+    display: none;
+    /* Esconde ambos os ícones por padrão */
+}
+
+.episodes-podcasts-card:hover .play-button-episodes-podcasts {
+    display: flex;
+    /* Mostra o botão no hover */
+    background-color: #3be477;
+    transition: background-color 0.3s;
+}
+
+
+.episodes-podcasts-card:hover .play-button-episodes-podcasts .play-icon-podcasts,
+.episodes-podcasts-card:hover .play-button-episodes-podcasts .pause-icon-podcasts {
+    display: none;
+    /* Garante que apenas um ícone será mostrado */
+
+}
+
+.episodes-podcasts-card:hover .play-button-episodes-podcasts .pause-icon-podcasts {
+    margin-right: 4px;
+}
+
+.episodes-podcasts-card:hover .play-button-episodes-podcasts .play-icon-podcasts.active,
+.episodes-podcasts-card:hover .play-button-episodes-podcasts .pause-icon-podcasts.active {
+    display: block;
+    /* Mostra o ícone ativo */
+}
+
+
+.artist-card:hover .play-button-artist,
+.albums-card:hover .play-button-album,
+.playlists-card:hover .play-button-playlist,
+.popular-artists-card:hover .play-button-popular-artists,
+.episodes-podcasts-card:hover .play-button-episodes-podcasts,
+.new-albums-card:hover .play-button-new-albums,
+.recently-played-card:hover .play-button-recently-played-card {
+    background-color: #3be477;
+    transition: 0.3s;
+}
+
+/* SVG aparece e muda de cor no hover do botão */
+.artist-card:hover .play-button-artist svg,
+.albums-card:hover .play-button-album svg,
+.playlists-card:hover .play-button-playlist svg,
+.popular-artists-card:hover .play-button-popular-artists svg,
+.episodes-podcasts-card:hover .play-button-episodes-podcasts svg,
+.new-albums-card:hover .play-button-new-albums svg,
+.recently-played-card:hover .play-button-recently-played-card svg {
+    display: block;
+    fill: #000;
+}
+
+
+
+
+/* Seção para estilizar "Melhor resultado" e "músicas"*/
+.search-results {
+    margin-top: 50px;
+    color: #fff;
+    margin-left: 1.50rem;
+}
+
+#search-results-grid {
+    margin-top: 10px;
+}
+
+.results-container {
+    display: flex;
+    gap: 10px;
+
+}
+
+
+
+.titles-container {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 10px;
+
+}
+
+
+.section-title.artists,
+.section-title.albums,
+.section-title.playlists {
+    margin-top: 50px;
+    margin-left: 1.50rem;
+
+}
+
+
+.section-title.tracks {
+    margin-left: 215px;
+
+}
+
+
+
+.best-result {
+    width: 410px;
+    height: 240px;
+    display: flex;
+    padding-bottom: 50px;
+    background-color: #181818;
+    border-radius: 8px;
+    position: relative;
+    flex-direction: column;
+    cursor: pointer;
+
+}
+
+.best-result-image img {
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin: 20px 0px 0px 20px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+}
+
+.best-result-info {
+    flex-grow: 1;
+}
+
+.best-result-type {
+    font-size: 0.775rem;
+    color: #b3b3b3;
+    margin: 10px 0px 0px 20px;
+}
+
+.best-result-info h2 {
+    font-size: 28px;
+    margin: 0;
+    font-weight: 700;
+    color: #fff;
+    margin: 20px 0px 0px 20px;
+}
+
+.best-result-info h2:hover {
+    text-decoration: underline;
+}
+
+.best-result:hover {
+    background-color: #252525;
+    transition: background-color 0.3s;
+}
+
+.best-result-button {
+    background-color: transparent;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    display: none;
+    /* Escondido por padrão, aparece no hover */
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    right: 10px;
+    bottom: 15px;
+}
+
+.best-result-button svg {
+    display: none;
+    fill: #000;
+    width: 20px;
+    height: 20px;
+}
+
+.best-result:hover .best-result-button svg {
+    display: block;
+    fill: #000;
+}
+
+
+/* Esconde ambos os ícones por padrão */
+.best-result-button .play-icon-best-result,
+.best-result-button .pause-icon-best-result {
+    display: none;
+}
+
+/* Quando o botão é exibido no hover */
+.best-result:hover .best-result-button {
+    display: flex;
+    background-color: #3be477;
+    transition: background-color 0.3s;
+}
+
+.best-result:hover .best-result-button .play-icon-best-result,
+.best-result:hover .best-result-button .pause-icon-best-result {
+    display: none;
+}
+
+.best-result:hover .best-result-button .pause-icon-best-result {
+    margin-right: 4px;
+}
+
+
+
+
+/* Quando pause está ativo, esconde o play e mostra o pause */
+.best-result:hover .best-result-button .pause-icon-best-result.active,
+.best-result:hover .best-result-button .play-icon-best-result.active {
+    display: block;
+}
+
+
+
+
+.tracks-section {
+    flex: 1;
+    /* Ocupa o espaço restante */
+    margin-top: 0;
+    max-height: 400px;
+    /* Limita a altura para evitar overflow */
+    overflow-y: auto;
+}
+
+.tracks-section h3 {
+    font-size: 20px;
+    margin-bottom: 10px;
+    color: #fff;
+    font-weight: 600;
+}
+
+.track-card {
+    display: flex;
+    align-items: center;
+    padding: 7px;
+    border-radius: 4px;
+    margin-bottom: 8px;
+    transition: background-color 0.2s;
+
+}
+
+.track-card:hover {
+    background-color: #252525
+}
+
+
+.track-image-container {
+    position: relative;
+    width: 40px;
+    height: 40px;
+    margin-right: 15px;
+}
+
+.track-image-container img {
+    width: 100%;
+    height: 100%;
+    border-radius: 4px;
+    object-fit: cover;
+}
+
+
+
+.track-play-button {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 24px;
+    height: 24px;
+    border: none;
+    border-radius: 50%;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    padding: 0;
+}
+
+.track-play-button svg {
+    width: 20px;
+    height: 20px;
+    fill: #fff;
+    display: none;
+}
+
+.track-card:hover .track-play-button svg {
+    display: block;
+
+
+}
+
+.track-info {
+    flex-grow: 1;
+    min-width: 0;
+}
+
+.track-name {
+    font-size: 1rem;
+    margin: 0;
+    color: #fff;
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 150px;
+}
+
+.track-name:hover {
+    text-decoration: underline;
+    cursor: pointer;
+
+}
+
+.track-artist {
+    font-size: 12px;
+    color: #b3b3b3;
+    margin-top: 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 150px;
+}
+
+.track-artist:hover {
+    color: #fff;
+    text-decoration: underline;
+    cursor: pointer;
+
+}
+
+.track-duration {
+    font-size: 12px;
+    color: #b3b3b3;
+    margin-right: 15px;
+    min-width: 40px;
+    text-align: right;
+}
+
+
+
+.footer {
+    color: #fff;
+    padding: 40px 0 20px;
+    font-size: 14px;
+
+}
+
+.footer-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    max-width: 1400px;
+    margin: 0 auto;
+    gap: 40px;
+}
+
+.footer-content {
+    display: flex;
+    flex: 1;
+    justify-content: space-between;
+    align-items: flex-start;
+    width: 100%;
+}
+
+.footer-sections {
+    display: flex;
+    gap: 40px;
+}
+
+.footer-section {
+    flex: 1;
+    min-width: 200px;
+}
+
+.footer-section h3 {
+    font-size: 16px;
+    color: #fff;
+    margin-bottom: 10px;
+    font-weight: 700;
+}
+
+.footer-section ul {
+    list-style-type: none;
+}
+
+.footer-section li {
+    margin-bottom: 8px;
+}
+
+.footer-section a {
+    text-decoration: none;
+    color: #b7b3b6;
+    font-weight: 400;
+    transition: color 0.3s ease;
+    font-size: 1rem
+}
+
+.footer-section a:hover {
+    color: #fff;
+    text-decoration: underline;
+}
+
+.footer-info-cop {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    margin: 30px 30px 10px 30px;
+    border-top: #2b2828 solid 1px;
+}
+
+
+.footer-copy {
+    color: #b7b3b6;
+    font-size: 0.875rem;
+}
+
+.footer-copy p {
+    margin-top: 40px;
+    display: flex;
+    align-items: center;
+    margin-bottom: 40px;
+    justify-content: flex-end;
+}
+
+.footer-informations {
+    display: flex;
+    flex-flow: wrap;
+    gap: 24px;
+
+}
+
+.footer-informations a {
+    color: #b7b3b6;
+    text-decoration: none;
+}
+
+.footer-informations a:hover {
+    color: #fff;
+    transition: color 0.3s ease;
+
+}
+
+.social-media {
+    display: flex;
+    gap: 10px;
+    margin-left: auto;
+}
+
+.social-media a {
+    background-color: #302f2f;
+    border-radius: 50%;
+    fill: #fff;
+    padding: 10px;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    text-decoration: none;
+
+}
+
+
+
+.social-media a:hover {
+    background-color: #7c7c7c;
+}
+
+
+/* Estilização da "Página do artista"*/
+.main-content.page-of-artist {
+    background-color: red;
+}
+
+.header {
+    contain: content;
+    display: flex;
+    height: 64px;
+    position: absolute;
+    align-items: center;
+    width: 100%;
+    background-color: #353535ff;
+    z-index: 1;
+    gap: 8px;
+    display: none;
+
+}
+
+.play-button-page-of-artist {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #3be477;
+    position: relative;
+    border-radius: 50%;
+    width: 48px;
+    height: 48px;
+    margin-left: 15px;
+    cursor: pointer;
+}
+
+.play-button-page-of-artist svg {
+    fill: #fff;
+    width: 20px;
+    height: 20px;
+
+}
+
+.play-button-page-of-artist:hover {
+    background-color: #3be477;
+    transform: scale(1.055);
+    transition: transform 0.3ms ease-in-out;
+
+}
+
+.artist-name {
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+
+.artist-banner {
+    height: 40vh;
+    max-height: none;
+    position: relative;
+    display: flex;
+    align-items: flex-end;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: 70% 25%;
+
+}
+
+.artist-info {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 50px;
+    color: #fff;
+    font-family: Arial, sans-serif;
+    margin-left: 20px;
+
+}
+
+.artist-name2 {
+    font-size: 96px;
+    font-weight: 700;
+    margin: 5px 0;
+
+}
+
+.listeners {
+    margin-left: 5px;
+    font-size: 15px;
+    font-weight: 700;
+
+}
+
+
+
+.followers {
+    height: 8vh;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    margin-top: 15px;
+    gap: 20px;
+
+
+}
+
+.play-button-page-of-artist2 {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #3be477;
+    position: relative;
+    border-radius: 50%;
+    width: 52px;
+    height: 52px;
+    margin-left: 15px;
+    cursor: pointer;
+
+}
+
+.play-button-page-of-artist2 svg {
+    fill: #fff;
+    width: 20px;
+    height: 20px;
+
+}
+
+.play-button-page-of-artist2:hover {
+    background-color: #3be477;
+    transform: scale(1.055);
+    transition: transform 0.3ms ease-in-out;
+
+}
+
+.followers .follow {
+    background-color: transparent;
+    border: 1px solid #666666;
+    border-radius: 999px;
+    padding: 9px 17px 9px 17px;
+    margin-inline-end: 8px;
+    display: inline-flex;
+    vertical-align: middle;
+    max-inline-size: 100%;
+    white-space: nowrap;
+    letter-spacing: inherit;
+    cursor: pointer;
+    font-size: 0.875rem;
+}
+
+
+.follow {
+    color: #fff;
+    font-size: 0.875rem;
+    font-weight: 700;
+}
+
+.icon-menu svg {
+    fill: #b3b3b3;
+    height: 32px;
+    width: 32px;
+
+}
+
+.popular-songs-by-the-artist h2 {
+    margin: 20px 0 30px 20px;
+}
+
+.popular-songs-by-the-artist ul {
+    list-style: none;
+}
+
+.track-item {
+    display: flex;
+    align-items: center;
+    margin-left: 40px;
+
+}
+
+.track-number2 {
+    width: 30px;
+    color: #b3b3b3;
+    height: 16px;
+    display: inline-block;
+    position: relative;
+    margin-bottom: 10px;
+}
+
+.track-image2 {
+    width: 40px;
+    height: 40px;
+    border-radius: 4px;
+    margin-bottom: 15px;
+}
+
+.track-name2 {
+    flex-grow: 1;
+    font-size: 16px;
+    margin-left: 10px;
+    margin-bottom: 10px;
+    max-width: 200px;
+    font-weight: 400;
+
+}
+
+.track-name2:hover {
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.track-duration2 {
+    color: #b3b3b3;
+    font-size: 14px;
+    margin: 0 400px 0 400px;
+
+}
+
+.play-icon {
+    fill: #fff;
+    width: 18px;
+    height: 18px;
+    opacity: 0;
+    position: absolute;
+
+}
+
+
+.track-item:hover .track-number2 {
+    opacity: 0;
+}
+
+.track-item:hover .play-icon {
+    opacity: 1;
+}
+
+.remaining-popular-music {
+    font-size: 0.875rem;
+    font-weight: 700;
+    background: none;
+    border: none;
+    color: #b3b3b3;
+    padding: 16px;
+    margin-left: 20px;
+
+}
+
+.remaining-popular-music:hover {
+    color: #fff;
+
+}
+
+/*Estilizaçõa das seções "Discográfia" e "Artistas Parecidos"*/
+
+.discography {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 60px;
+}
+
+.discography h2 {
+    font-weight: 700;
+    font-size: 1.5rem;
+    margin-left: 1.25rem;
+    margin-top: 30px;
+
+
+}
+
+.show-all-discography,
+.show-all-similar-artists {
+    font-size: 0.875rem;
+    color: #b3b3b3;
+    font-weight: 600;
+    margin-right: 25px;
+}
+
+.discography h2:hover,
+.show-all-discography:hover {
+    text-decoration: underline;
+    cursor: pointer;
+    text-decoration-color: #fff;
+}
+
+
+.discography-content {
+    display: flex;
+    gap: 20px;
+    margin: 30px 0px 20px 30px;
+}
+
+.discography-content span {
+    font-size: 0.875rem;
+    font-weight: 400;
+    color: #f0f0f0;
+    cursor: pointer;
+}
+
+.discography-container {
+    padding-left: 1.25rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.discography-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    /* Cria colunas automáticas com largura mínima de 160px */
+    gap: 5px;
+    justify-items: center;
+    /* Centraliza os cards horizontalmente no grid */
+
+
+}
+
+.discography-card {
+    width: 180px;
+    height: 280px;
+    /* Define uma altura fixa para todos os cards */
+    border-radius: 8px;
+    text-align: center;
+    transition: background-color 0.3s;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    /* Distribui os itens igualmente */
+    overflow: hidden;
+    margin: 10px;
+    padding: 10px;
+
+
+}
+
+.discography-card:hover {
+    background-color: #1b1a1a;
+    cursor: pointer;
+}
+
+.discography-card img {
+    width: 160px;
+    height: 160px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+    object-fit: cover;
+
+}
+
+.discography-card a {
+    margin-top: 10px;
+    font-size: 1rem;
+    display: flex;
+    justify-content: flex-start;
+
+}
+
+.discography-card a:hover {
+    text-decoration: underline;
+    text-decoration-color: #fff;
+}
+
+.discography-details {
+    font-size: 0.875rem;
+    color: #b3b3b3;
+    font-weight: 400;
+    display: flex;
+    justify-content: flex-start;
+    margin-top: 10px;
+}
+
+.big-dot3::after {
+    content: "•";
+    font-size: 12px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 2px 3px 0 4px;
+}
+
+.play-button-discography {
+    background-color: transparent;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    margin-left: 100px;
+    margin-top: 100px;
+}
+
+.play-button-discography svg {
+    display: none;
+    fill: #fff;
+    width: 20px;
+    height: 20px;
+}
+
+.play-button-discography:hover {
+    transform: scale(1.1);
+}
+
+.discography-card:hover .play-button-discography {
+    background-color: rgb(124, 218, 124);
+    transition: 0.3s;
+}
+
+.discography-card:hover .play-button-discography svg {
+    display: block;
+    fill: #fff;
+}
+
+/* Estilização da seção "Artistas parecidos"*/
+.similar-artists {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 10px;
+    margin-left: 1.25rem;
+}
+
+.title {
+    font-weight: 700;
+    font-size: 1.5rem;
+
+}
+
+.title2 {
+    font-weight: 700;
+    font-size: 2rem;
+    margin: 60px 0px 20px 10px;
+
+
+}
+
+.similar-artists-grid {
+    padding-left: 1.25rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    /* Cria colunas automáticas com largura mínima de 160px */
+    gap: 5px;
+    justify-items: center;
+    /* Centraliza os cards horizontalmente no grid */
+
+}
+
+.similar-artist-card {
+    width: 180px;
+    /* Largura fixa para todos os cards */
+    border-radius: 8px;
+    text-align: center;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    /* Alinha os itens no topo, evitando espaçamentos extras */
+    overflow: hidden;
+    margin: 10px;
+    /* Espaçamento entre os cards no grid*/
+    padding: 20px 0px 20px 10px;
+    min-height: 200px;
+
+}
+
+
+.similar-artist-card img {
+    width: 160px;
+    height: 160px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+
+}
+
+.similar-artist-card a {
+    margin-top: 10px;
+    font-size: 1rem;
+    display: flex;
+    justify-content: flex-start;
+
+}
+
+.similar-artist-card p {
+    font-size: 0.875rem;
+    color: #b3b3b3;
+    font-weight: 400;
+    display: flex;
+    justify-content: flex-start;
+    margin-top: 10px;
+
+}
+
+.play-button-similar-artists {
+    background-color: transparent;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    margin-left: 100px;
+    margin-top: 110px;
+
+}
+
+.play-button-similar-artists svg {
+    display: none;
+    fill: #fff;
+    width: 20px;
+    height: 20px;
+
+}
+
+/*Hover*/
+
+.title:hover,
+.similar-artist-card a:hover {
+    text-decoration: underline;
+    text-decoration-color: #fff;
+    cursor: pointer;
+}
+
+
+.show-all-similar-artists:hover {
+    text-decoration: underline;
+    cursor: pointer;
+    text-decoration-color: #fff;
+}
+
+.similar-artist-card:hover {
+    background-color: #1b1a1a;
+    cursor: pointer;
+}
+
+.play-button-similar-artists:hover {
+    transform: scale(1.1);
+}
+
+
+.similar-artist-card:hover .play-button-similar-artists {
+    background-color: #3be477;
+    transition: 0.3s;
+}
+
+/* SVG aparece e muda de cor no hover do botão */
+
+.similar-artist-card:hover:hover .play-button-similar-artists svg {
+    display: block;
+    fill: #fff;
+}
+
+/* Estilizações da barra de mídia*/
+.media-control {
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    justify-content: space-between;
+    width: 100%;
+    height: 72px;
+    z-index: calc(5+1);
+}
+
+.control-button-center {
+    max-width: 722px;
+    width: 40%;
+
+
+}
+
+.align-the-buttons {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 16px;
+    margin-top: 16px;
+    margin-bottom: 8px;
+
+
+}
+
+.control-button-center button {
+    background: none;
+    border: none;
+}
+
+.random-order,
+.back,
+.next,
+.repeat {
+    fill: #b3b3b3;
+    width: 16px;
+    height: 16px;
+}
+
+
+
+.background-pause-and-play {
+    display: inline-block;
+    background-color: #b3b3b3;
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.pause,
+.play {
+    fill: #000;
+    width: 16px;
+    height: 16px;
+
+}
+
+.playbacks {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+}
+
+.jil {
+    display: flex;
+    flex: auto;
+    align-items: center;
+
+}
+
+
+.playback-progress-bar {
+    height: 12px;
+    position: relative;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.reproduction-bar {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 4px;
+    background: #b3b3b3;
+    border-radius: 20px;
+    outline: none;
+
+}
+
+.reproduction-bar::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 12px;
+    height: 12px;
+    background: #fff;
+    /* Cor da bolinha */
+    border-radius: 50%;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+.content-info {
+    container-type: inline-size;
+    min-width: 180px;
+    padding-inline-start: 8px;
+    width: 30%;
+    margin-left: 15px;
+    margin-top: 20px;
+    gap: 15px;
+    display: flex;
+    align-items: center;
+}
+
+.content-img {
+    position: relative;
+    height: 56px;
+    width: 56px;
+    border-radius: 4px;
+}
+
+.jun {
+    display: inline-grid;
+    column-gap: 8px;
+    align-items: center;
+
+
+}
+
+.content-name {
+    font-weight: 400;
+    text-wrap: nowrap;
+    white-space: nowrap;
+    color: #fff;
+    font-size: 0.875rem;
+
+}
+
+
+.content-artista {
+    margin-top: 5px;
+    color: #b3b3b3;
+    font-size: 0.75rem;
+}
+
+
+
+
+
+.control-button-right {
+    display: flex;
+    min-width: 180px;
+    width: 30%;
+    flex-direction: row;
+    justify-content: flex-end;
+}
+
+.align-the-buttons-right {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 18px;
+    margin-right: 20px;
+}
+
+.control-button-right button {
+    background: none;
+    border: none;
+}
+
+
+
+.playing-now,
+.list,
+.connect-to-device,
+.volume-icon,
+.full-screen {
+    width: 16px;
+    height: 16px;
+    fill: #b3b3b3;
+}
+
+.align-volume-bar {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+}
+
+.volume-bar-background {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 2px;
+    max-width: 100px;
+}
+
+
+.volume-bar {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 4px;
+    background: #fff;
+    border-radius: 20px;
+    outline: none;
+
+}
+
+.volume-bar::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 12px;
+    /* Define um tamanho menor */
+    height: 12px;
+    background: #b3b3b3;
+    /* Cor da bolinha */
+    border-radius: 50%;
+    cursor: pointer;
+    opacity: 0;
+
+}
+
+/*.btn-inactive {
+    width: 140px;
+    padding: 12px 20px;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #000;
+    border: none;
+    border-radius: 50px;
+    margin-top: 30px;
+    transition: background-color 0.3s;
+    background-color: #1ed760;
+    margin-left: 0;
+    opacity: 0.3;
+    cursor: not-allowed;
+
+}*/
+
+/* Hover */
+
+.align-volume-bar:hover .volume-bar {
+    background: #1db954;
+    cursor: pointer;
+}
+
+.align-volume-bar:hover .volume-bar::-webkit-slider-thumb {
+    opacity: 1;
+}
+
+
+.volume-bar:hover::-webkit-slider-thumb {
+    opacity: 1;
+}
+
+.control-button-center button svg:hover,
+.control-button-right button svg:hover {
+    fill: #f0f0f0;
+    transition: 0.3ms;
+    cursor: pointer;
+}
+
+.playback-progress-bar:hover .reproduction-bar::-webkit-slider-thumb {
+    opacity: 1;
+}
+
+.reproduction-bar:hover::-webkit-slider-thumb {
+    opacity: 1;
+}
+
+.playback-progress-bar:hover .reproduction-bar {
+    cursor: pointer;
+}
+
+.content-name:hover {
+    text-decoration: underline;
+    text-decoration-color: #fff;
+    cursor: pointer;
+
+}
+
+.content-artista:hover {
+    color: #fff;
+    text-decoration: underline;
+    text-decoration-color: #fff;
+    cursor: pointer;
+}
