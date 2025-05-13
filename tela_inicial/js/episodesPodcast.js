@@ -1,59 +1,74 @@
 $(document).ready(function () {
-    const episodesPodcast = $('.episodes-podcast-content')
-    const hitParades = $('.hit-parades-content')
-    const searchInput = $('.search-input')
-    const mainContent = $('.main-content')
-    const resultsGrid = $('#search-results-grid')
-    const popularArtists = $('.popular-artists-content')
-    const newAlbumsReleases = $('.new-albums-releases-content')
-    const pageOfArtist = $('.page-of-artist')
-    const recentlyPlayedContent = $('.recently-played-content')
+  const episodesPodcast = $(".episodes-podcast-content");
+  const hitParades = $(".hit-parades-content");
+  const searchInput = $(".search-input");
+  const mainContent = $(".main-content");
+  const resultsGrid = $("#search-results-grid");
+  const popularArtists = $(".popular-artists-content");
+  const newAlbumsReleases = $(".new-albums-releases-content");
+  const pageOfArtist = $(".page-of-artist");
+  const recentlyPlayedContent = $(".recently-played-content");
 
-    isPlaying = false
-    currentPodcastUri = null
+  isPlaying = false;
+  currentPodcastUri = null;
 
-    if (typeof isPlaying === 'undefined' || typeof currentPodcastUri === 'undefined') {
-        console.error('Erro: isPlaying ou currentPodcastUri não estão definidos. Verifique a ordem de carregamento dos scripts.')
-        return;
-    }
+  if (
+    typeof isPlaying === "undefined" ||
+    typeof currentPodcastUri === "undefined"
+  ) {
+    console.error(
+      "Erro: isPlaying ou currentPodcastUri não estão definidos. Verifique a ordem de carregamento dos scripts."
+    );
+    return;
+  }
 
-    // Função para renderizar os "Episódios dos Podcasts"
-    function renderEpisodesPodcast(data) {
-        episodesPodcast.empty() // Limpa o conteúdo
+  // Função para renderizar os "Episódios dos Podcasts"
+  function renderEpisodesPodcast(data) {
+    episodesPodcast.empty(); // Limpa o conteúdo
 
-        const fragment = document.createDocumentFragment()
-        const container = $('<div>').addClass('episodes-podcasts-container')
-        const title = $('<h2>').text('Episódios para você').addClass('section-title episodes-podcasts')
-        const grid = $('<div>').addClass('episodes-podcasts-grid')
-        const showAllLink = $('<a>').text('Mostrar tudo').addClass('content__link-All-episodes-podcasts').attr('href', '#')
-        const title2 = $('<h2>').text('Episódios para você').addClass('section-title episodes-podcasts2').hide()
+    const fragment = document.createDocumentFragment();
+    const container = $("<div>").addClass("episodes-podcasts-container");
+    const title = $("<h2>")
+      .text("Episódios para você")
+      .addClass("section-title episodes-podcasts");
+    const grid = $("<div>").addClass("episodes-podcasts-grid");
+    const showAllLink = $("<a>")
+      .text("Mostrar tudo")
+      .addClass("content__link-All-episodes-podcasts")
+      .attr("href", "#");
+    const title2 = $("<h2>")
+      .text("Episódios para você")
+      .addClass("section-title episodes-podcasts2")
+      .hide();
 
-        container.append(title).append(showAllLink).append(title2)
+    container.append(title).append(showAllLink).append(title2);
 
-        // Função para renderizar episódios
-        function renderEpisodes(limit) {
-            grid.empty();
-            const podcasts = (data.results.episodesPodcast || []).slice(0, limit)
-            podcasts.forEach(podcast => {
-                const card = document.createElement('div')
-                card.className = 'episodes-podcasts-card'
-                card.setAttribute('data-podcast-uri', podcast.uri)
+    // Função para renderizar episódios
+    function renderEpisodes(limit) {
+      grid.empty();
+      const podcasts = (data.results.episodesPodcast || []).slice(0, limit);
+      podcasts.forEach((podcast) => {
+        const card = document.createElement("div");
+        card.className = "episodes-podcasts-card";
+        card.setAttribute("data-podcast-uri", podcast.uri);
 
-                // Converter duração para minutos
-                const minutes = Math.floor(podcast.duration_ms / 60000)
-                const formattedDuration = `${minutes}`
+        // Converter duração para minutos
+        const minutes = Math.floor(podcast.duration_ms / 60000);
+        const formattedDuration = `${minutes}`;
 
-                // Formatar data de lançamento
-                const releaseDate = new Date(podcast.release_date);
-                const year = releaseDate.getFullYear();
-                const month = releaseDate.toLocaleString('pt-BR', { month: 'short' });
-                const day = releaseDate.getDate(); // Corrigido: getDay() retorna o dia da semana
-                const formattedDate = (year === 2025) ? `${day} de ${month}` : `${month} de ${year}`
-                const truncatedName = podcast.name.length > 33
-                ? podcast.name.slice(0, 33) + '...'
-                : podcast.name
+        // Formatar data de lançamento
+        const releaseDate = new Date(podcast.release_date);
+        const year = releaseDate.getFullYear();
+        const month = releaseDate.toLocaleString("pt-BR", { month: "short" });
+        const day = releaseDate.getDate(); // Corrigido: getDay() retorna o dia da semana
+        const formattedDate =
+          year === 2025 ? `${day} de ${month}` : `${month} de ${year}`;
+        const truncatedName =
+          podcast.name.length > 33
+            ? podcast.name.slice(0, 33) + "..."
+            : podcast.name;
 
-                card.innerHTML = `
+        card.innerHTML = `
                     <div class="popular-podcasts-image">
                         <img src="${podcast.image}" alt="${truncatedName}" onerror="this.src='default.jpg'">
                     </div>
@@ -72,146 +87,171 @@ $(document).ready(function () {
                         <p>${formattedDate}</p> <span class="big-dot2"></span> <p>${formattedDuration}min</p>
                     </div>
                 `;
-                // Define o estado inicial do ícone com base no estado de reprodução
-                const card1 = $(card)
-                const playIcon = card1.find('.play-icon-podcasts')
-                const pauseIcon = card1.find('.pause-icon-podcasts')
-                if (podcasts.uri === currentPodcastUri && isPlaying) {
-                    playIcon.removeClass('active')
-                    pauseIcon.addClass('active')
-                } else {
-                    playIcon.addClass('active')
-                    pauseIcon.removeClass('active')
-                }
-                // Adiciona evento de clique para reproduzir o episódio
-                $(card).on('click', function () {
-                  
-                    if (player) {
-                        if (currentPodcastUri === podcast.uri && isPlaying) {
-                            // Pausar a reprodução
-                            sendSpotifyRequest('pause', { device_id: deviceId }).done(function (response) {
-                                if (response.success) {
-                                    console.log('Reprodução pausada com sucesso:', podcast.name);
-                                    isPlaying = false
-                                    previousPodcastUri = currentPodcastUri  
-                                    //currentPodcastUri = null;
-                                    $('.play-button-episodes-podcasts').each(function () {
-
-                                        // Atualiza o card atual
-                                        const currentCard = $(this);
-                                        const currentPlayIcon = currentCard.find('.play-icon-podcasts')
-                                        const currentPauseIcon = currentCard.find('.pause-icon-podcasts')
-                                        currentPlayIcon.addClass('active')
-                                        currentPauseIcon.removeClass('active')
-
-                                    });
-                                } else {
-                                    console.error('Erro ao pausar a reprodução:', response.error);
-                                }
-                            }).fail(function (jqXHR, textStatus) {
-                                console.error('Falha na requisição pause:', textStatus)
-                                console.log('Resposta do servidor:', jqXHR.responseText)
-                            });
-                        } else {
-                            // Iniciar ou retomar a reprodução
-                            const playRequest = {
-                                device_id: deviceId,
-                                episode_uri: podcast.uri
-                            }
-
-
-                            if (currentPodcastUri === podcast.uri && podcastPositions[podcast.uri]) {
-                                playRequest.position_ms = podcastPositions[podcast.uri];
-                            }
-                            sendSpotifyRequest('play', { device_id: deviceId, episode_uri: podcast.uri }).done(function (response) {
-                                if (response.success) {
-                                   
-                                    // Atualiza o podcast anterior, se houver
-                                    if (currentPodcastUri && currentPodcastUri !== podcast.uri) {
-                                        previousPodcastUri = currentPodcastUri;
-                                        const previousCard = $(`.episodes-podcasts-card[data-podcast-uri="${previousPodcastUri}"]`);
-                                        if (previousCard.length) {
-                                            const previousPlayIcon = previousCard.find('.play-icon-podcasts');
-                                            const previousPauseIcon = previousCard.find('.pause-icon-podcasts');
-                                            previousPlayIcon.addClass('active');
-                                            previousPauseIcon.removeClass('active');
-                                        }
-                                    }
-
-                                    // Atualiza o estado atual
-                                    isPlaying = true;
-                                    currentPodcastUri = podcast.uri;
-
-                                    // Atualiza o card atual
-                                    const currentCard = $(this);
-                                    const currentPlayIcon = currentCard.find('.play-icon-podcasts');
-                                    const currentPauseIcon = currentCard.find('.pause-icon-podcasts');
-                                    currentPlayIcon.removeClass('active');
-                                    currentPauseIcon.addClass('active');
-                                } else {
-                                    console.error('Erro ao iniciar reprodução do episódio:', response.error);
-                                }
-                            }).fail(function (jqXHR, textStatus) {
-                                console.error('Falha na requisição play:', textStatus);
-                                console.log('Resposta do servidor:', jqXHR.responseText);
-                            });
-                        }
-                    }
-                });
-
-
-                fragment.appendChild(card);
-            })
-
-
-            grid.append(fragment);
-        }
-
-        renderEpisodes(8); // Inicialmente 8 episódios
-
-        // Evento "Mostrar tudo"
-        showAllLink.on('click', function (e) {
-            e.preventDefault();
-            renderEpisodes(20);
-            showAllLink.hide();
-            $('.info-content').hide();
-            mainContent.addClass('searched');
-            hitParades.hide();
-            newAlbumsReleases.hide()
-            popularArtists.hide()
-            recentlyPlayedContent.hide()
-            title.hide();
-            title2.show();
-           
-        })
-
-        episodesPodcast.append(container).append(grid).show();
-    }
-
-    
-
-    // Evento de input
-    searchInput.on('input', function () {
-        const query = $(this).val().trim();
-        if (query.length > 0) {
-            episodesPodcast.hide();
-            resultsGrid.show();
-            mainContent.addClass('searched');
+        // Define o estado inicial do ícone com base no estado de reprodução
+        const card1 = $(card);
+        const playIcon = card1.find(".play-icon-podcasts");
+        const pauseIcon = card1.find(".pause-icon-podcasts");
+        if (podcasts.uri === currentPodcastUri && isPlaying) {
+          playIcon.removeClass("active");
+          pauseIcon.addClass("active");
         } else {
-            episodesPodcast.show();
-            resultsGrid.hide();
-            pageOfArtist.hide()
-            mainContent.removeClass('searched');
-           
+          playIcon.addClass("active");
+          pauseIcon.removeClass("active");
         }
-    })
+        // Adiciona evento de clique para reproduzir o episódio
+        $(card).on("click", function () {
+          if (player) {
+            if (currentPodcastUri === podcast.uri && isPlaying) {
+              // Pausar a reprodução
+              sendSpotifyRequest("pause", { device_id: deviceId })
+                .done(function (response) {
+                  if (response.success) {
+                    console.log(
+                      "Reprodução pausada com sucesso:",
+                      podcast.name
+                    );
+                    isPlaying = false;
+                    previousPodcastUri = currentPodcastUri;
+                    //currentPodcastUri = null;
+                    $(".play-button-episodes-podcasts").each(function () {
+                      // Atualiza o card atual
+                      const currentCard = $(this);
+                      const currentPlayIcon = currentCard.find(
+                        ".play-icon-podcasts"
+                      );
+                      const currentPauseIcon = currentCard.find(
+                        ".pause-icon-podcasts"
+                      );
+                      currentPlayIcon.addClass("active");
+                      currentPauseIcon.removeClass("active");
+                    });
+                  } else {
+                    console.error(
+                      "Erro ao pausar a reprodução:",
+                      response.error
+                    );
+                  }
+                })
+                .fail(function (jqXHR, textStatus) {
+                  console.error("Falha na requisição pause:", textStatus);
+                  console.log("Resposta do servidor:", jqXHR.responseText);
+                });
+            } else {
+              // Iniciar ou retomar a reprodução
+              const playRequest = {
+                device_id: deviceId,
+                episode_uri: podcast.uri,
+              };
 
-    function fetchPopularPodcasts(podcast){
-        renderEpisodesPodcast(podcast || [])
-        return Promise.resolve()
+              if (
+                currentPodcastUri === podcast.uri &&
+                podcastPositions[podcast.uri]
+              ) {
+                playRequest.position_ms = podcastPositions[podcast.uri];
+              }
+              sendSpotifyRequest("play", {
+                device_id: deviceId,
+                episode_uri: podcast.uri,
+              })
+                .done(function (response) {
+                  if (response.success) {
+                    // Atualiza o podcast anterior, se houver
+                    if (
+                      currentPodcastUri &&
+                      currentPodcastUri !== podcast.uri
+                    ) {
+                      previousPodcastUri = currentPodcastUri;
+                      const previousCard = $(
+                        `.episodes-podcasts-card[data-podcast-uri="${previousPodcastUri}"]`
+                      );
+                      if (previousCard.length) {
+                        const previousPlayIcon = previousCard.find(
+                          ".play-icon-podcasts"
+                        );
+                        const previousPauseIcon = previousCard.find(
+                          ".pause-icon-podcasts"
+                        );
+                        previousPlayIcon.addClass("active");
+                        previousPauseIcon.removeClass("active");
+                      }
+                    }
+
+                    // Atualiza o estado atual
+                    isPlaying = true;
+                    currentPodcastUri = podcast.uri;
+
+                    // Atualiza o card atual
+                    const currentCard = $(this);
+                    const currentPlayIcon = currentCard.find(
+                      ".play-icon-podcasts"
+                    );
+                    const currentPauseIcon = currentCard.find(
+                      ".pause-icon-podcasts"
+                    );
+                    currentPlayIcon.removeClass("active");
+                    currentPauseIcon.addClass("active");
+                  } else {
+                    console.error(
+                      "Erro ao iniciar reprodução do episódio:",
+                      response.error
+                    );
+                  }
+                })
+                .fail(function (jqXHR, textStatus) {
+                  console.error("Falha na requisição play:", textStatus);
+                  console.log("Resposta do servidor:", jqXHR.responseText);
+                });
+            }
+          }
+        });
+
+        fragment.appendChild(card);
+      });
+
+      grid.append(fragment);
     }
 
-    window.fetchPopularPodcasts = fetchPopularPodcasts
+    renderEpisodes(8); // Inicialmente 8 episódios
 
-   
-})
+    function showAllContent(e) {
+      e.preventDefault();
+      renderEpisodes(20);
+      showAllLink.hide();
+      $(".info-content").hide();
+      mainContent.addClass("searched");
+      hitParades.hide();
+      newAlbumsReleases.hide();
+      popularArtists.hide();
+      recentlyPlayedContent.hide();
+      title.hide();
+      title2.show();
+    }
+    // Evento "Mostrar tudo"
+    showAllLink.on("click", showAllContent);
+    title.on("click", showAllContent);
+
+    episodesPodcast.append(container).append(grid).show();
+  }
+
+  // Evento de input
+  searchInput.on("input", function () {
+    const query = $(this).val().trim();
+    if (query.length > 0) {
+      episodesPodcast.hide();
+      resultsGrid.show();
+      mainContent.addClass("searched");
+    } else {
+      episodesPodcast.show();
+      resultsGrid.hide();
+      pageOfArtist.hide();
+      mainContent.removeClass("searched");
+    }
+  });
+
+  function fetchPopularPodcasts(podcast) {
+    renderEpisodesPodcast(podcast || []);
+    return Promise.resolve();
+  }
+
+  window.fetchPopularPodcasts = fetchPopularPodcasts;
+});

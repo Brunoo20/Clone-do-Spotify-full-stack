@@ -146,7 +146,6 @@ function retrieveRecentlyPlayedContent($spotify, $cache)
     try {
         $cachedContent = $cache->get($cacheKey);
         if (isset($cachedContent['data']) && is_array($cachedContent['data']) && !empty($cachedContent['data'])) {
-            error_log("Dados recuperados do cache para $cacheKey: " . json_encode($cachedContent['data']));
             return [
                 'data' => $cachedContent['data'],
                 'debug' => [
@@ -348,7 +347,7 @@ function retrieveRecentlyPlayedContent($spotify, $cache)
         if (empty($recentContent)) {
             error_log("Nenhum conteúdo válido encontrado após processamento");
             try {
-                $cacheSetResult = $cache->set($cacheKey, [], 86400);
+                $cacheSetResult = $cache->set($cacheKey, [], 3600);
                 error_log("Array vazio armazenado no cache para $cacheKey: " . json_encode($cacheSetResult));
             } catch (\Exception $e) {
                 error_log("Erro ao armazenar array vazio no cache para $cacheKey: " . $e->getMessage());
@@ -367,7 +366,7 @@ function retrieveRecentlyPlayedContent($spotify, $cache)
 
         // Armazenar no cache
         try {
-            $cacheSetResult = $cache->set($cacheKey, $recentContent, 86400);
+            $cacheSetResult = $cache->set($cacheKey, $recentContent, 3600);
             error_log("Dados armazenados no cache para $cacheKey: " . json_encode($recentContent));
         } catch (\Exception $e) {
             error_log("Erro ao armazenar no cache para $cacheKey: " . $e->getMessage());

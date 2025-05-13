@@ -3,8 +3,9 @@
 namespace spotify\tela_inicial\library;
 
 
-require __DIR__ . '/../source/config.php';
+require __DIR__ . '/../../../source/config.php';
 
+use InvalidArgumentException;
 use SpotifyWebAPI\SpotifyWebAPI;
 use SpotifyWebAPI\Session;
 
@@ -26,6 +27,7 @@ class SpotifyClient
             app_secret,
             app_redirect_Uri
         );
+        
 
         // Inicializa a API do Spotify
         $this->api = new SpotifyWebAPI();
@@ -365,6 +367,29 @@ class SpotifyClient
             print_r("Erro em getMyCurrentTrack: " . $e->getMessage());
             return null;
         }
+    }
+
+    public function repeatMode($options = []){
+        $state = $options['state'] ?? null;
+        $deviceId = $options['device_id'] ?? null;
+
+        if(!in_array($state, ['track', 'context', 'off'])){
+            throw new InvalidArgumentException("O parâmetro 'state' deve ser 'track', 'context' ou 'off'.");
+        }
+
+        $params = ['state' => $state];
+        if($deviceId){
+            $params['device_id'] = $deviceId;
+        }
+
+        try{
+            $this->api->repeat($params);
+
+        }catch (\Exception $e){
+            throw new ("Erro ao chamar a API do Spotify: " . $e->getMessage());
+        }
+       
+
     }
 
     public function authenticateClientCredentials()

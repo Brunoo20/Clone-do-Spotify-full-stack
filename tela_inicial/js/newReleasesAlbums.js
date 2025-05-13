@@ -1,35 +1,42 @@
 $(document).ready(function () {
-    const newAlbumsReleases = $('.new-albums-releases-content');
-    const episodesPodcast = $('.episodes-podcast-content');
-    const hitParades = $('.hit-parades-content');
-    const searchInput = $('.search-input');
-    const mainContent = $('.main-content');
-    const resultsGrid = $('#search-results-grid');
-    const popularArtists = $('.popular-artists-content')
-    const recentlyPlayedContent = $('.recently-played-content')
+  const newAlbumsReleases = $(".new-albums-releases-content");
+  const episodesPodcast = $(".episodes-podcast-content");
+  const hitParades = $(".hit-parades-content");
+  const searchInput = $(".search-input");
+  const mainContent = $(".main-content");
+  const resultsGrid = $("#search-results-grid");
+  const popularArtists = $(".popular-artists-content");
+  const recentlyPlayedContent = $(".recently-played-content");
 
+  // Função otimizada para renderizar novos álbuns
+  function renderNewAlbumsReleases(data) {
+    newAlbumsReleases.empty(); // Limpa o conteúdo
 
-    // Função otimizada para renderizar novos álbuns
-    function renderNewAlbumsReleases(data) {
-        newAlbumsReleases.empty(); // Limpa o conteúdo
+    const fragment = document.createDocumentFragment();
+    const container = $("<div>").addClass("new-albums-container");
+    const title = $("<h2>")
+      .text("Novos lançamentos para você")
+      .addClass("section-title new-albums");
+    const grid = $("<div>").addClass("new-albums-grid");
+    const showAllLink = $("<a>")
+      .text("Mostrar tudo")
+      .addClass("content__link-All-new-albums")
+      .attr("href", "#");
+    const title2 = $("<h2>")
+      .text("Novos lançamentos para você")
+      .addClass("section-title new-albums2")
+      .hide();
 
-        const fragment = document.createDocumentFragment();
-        const container = $('<div>').addClass('new-albums-container');
-        const title = $('<h2>').text('Novos lançamentos para você').addClass('section-title new-albums');
-        const grid = $('<div>').addClass('new-albums-grid');
-        const showAllLink = $('<a>').text('Mostrar tudo').addClass('content__link-All-new-albums').attr('href', '#');
-        const title2 = $('<h2>').text('Novos lançamentos para você').addClass('section-title new-albums2').hide();
+    container.append(title).append(showAllLink).append(title2);
 
-        container.append(title).append(showAllLink).append(title2);
-
-        // Renderiza álbuns com limite
-        function renderAlbumsReleases(limit) {
-            grid.empty();
-            const albums = (data.results.newAlbums || []).slice(0, limit);
-            albums.forEach(album => {
-                const card = document.createElement('div');
-                card.className = 'new-albums-card';
-                card.innerHTML = `
+    // Renderiza álbuns com limite
+    function renderAlbumsReleases(limit) {
+      grid.empty();
+      const albums = (data.results.newAlbums || []).slice(0, limit);
+      albums.forEach((album) => {
+        const card = document.createElement("div");
+        card.className = "new-albums-card";
+        card.innerHTML = `
                     <div class="popular-podcasts-image">
                         <img src="${album.image}" alt="${album.name}" onerror="this.src='default.jpg'">
                     </div>
@@ -41,56 +48,53 @@ $(document).ready(function () {
                     <a>${album.name}</a>
                     <p>${album.artist}</p>
                 `;
-                fragment.appendChild(card);
-            });
-            grid.append(fragment);
-        }
-
-        renderAlbumsReleases(8); // Inicialmente 8 álbuns
-
-        // Evento "Mostrar tudo"
-        showAllLink.on('click', function (e) {
-            e.preventDefault()
-            renderAlbumsReleases(20)
-            showAllLink.hide()
-            $('.info-content').hide()
-            mainContent.addClass('searched')
-            hitParades.hide()
-            popularArtists.hide()
-            episodesPodcast.hide()
-            recentlyPlayedContent.hide()
-            title.hide()
-            title2.show()
-           
-        })
-
-        newAlbumsReleases.append(container).append(grid).show()
+        fragment.appendChild(card);
+      });
+      grid.append(fragment);
     }
 
+    renderAlbumsReleases(8); // Inicialmente 8 álbuns
 
-
-    // Evento de input
-    searchInput.on('input', function () {
-        const query = $(this).val().trim();
-        if (query.length > 0) {
-            newAlbumsReleases.hide();
-            resultsGrid.show();
-            mainContent.addClass('searched');
-        } else {
-            newAlbumsReleases.show();
-            resultsGrid.hide();
-            mainContent.removeClass('searched');
-
-        }
-    })
-
-    // Função para buscar e renderizar novos álbuns ( apenas renderiza os dados recebidos)
-    function fetchNewAlbums(albums) {
-        renderNewAlbumsReleases(albums || []) // Renderiza os dados recebidos ou limpa se não houver dados
-        return Promise.resolve()
-
+    function showAllContent(e) {
+      e.preventDefault();
+      renderAlbumsReleases(20);
+      showAllLink.hide();
+      $(".info-content").hide();
+      mainContent.addClass("searched");
+      hitParades.hide();
+      popularArtists.hide();
+      episodesPodcast.hide();
+      recentlyPlayedContent.hide();
+      title.hide();
+      title2.show();
     }
+    // Evento "Mostrar tudo"
+    showAllLink.on("click", showAllContent);
+    title.on("click", showAllContent);
 
-    // Expor a função fetchNewAlbums para ser chamada pelo Initialcontent.js
-    window.fetchNewAlbums = fetchNewAlbums
-})
+    newAlbumsReleases.append(container).append(grid).show();
+  }
+
+  // Evento de input
+  searchInput.on("input", function () {
+    const query = $(this).val().trim();
+    if (query.length > 0) {
+      newAlbumsReleases.hide();
+      resultsGrid.show();
+      mainContent.addClass("searched");
+    } else {
+      newAlbumsReleases.show();
+      resultsGrid.hide();
+      mainContent.removeClass("searched");
+    }
+  });
+
+  // Função para buscar e renderizar novos álbuns ( apenas renderiza os dados recebidos)
+  function fetchNewAlbums(albums) {
+    renderNewAlbumsReleases(albums || []); // Renderiza os dados recebidos ou limpa se não houver dados
+    return Promise.resolve();
+  }
+
+  // Expor a função fetchNewAlbums para ser chamada pelo Initialcontent.js
+  window.fetchNewAlbums = fetchNewAlbums;
+});

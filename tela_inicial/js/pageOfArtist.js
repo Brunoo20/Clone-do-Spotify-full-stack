@@ -413,7 +413,7 @@ $(document).ready(function () {
     // Observador para detectar quando .best-result aparece no DOM
     const observer = new MutationObserver(() => {
         if ($('.best-result').length) {
-            console.log('Elemento .best-result encontrado no DOM');
+           
             observer.disconnect();
         }
     });

@@ -49,10 +49,7 @@ $(document).ready(function () {
         })
             .done(function (response) {
                 if (response.success) {
-                    console.log('Resultado:', response.results)
-                    if (response.debug) {
-                        console.log('Debug do backend:', response.debug)
-                    }
+                  
                     searchCache.set(query, { data: response.results, timestamp: Date.now() })
                     return response.results
                 } else {

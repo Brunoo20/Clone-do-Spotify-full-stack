@@ -433,6 +433,53 @@ try {
             $spotify->seek((int)$positionMs, ['device_id' => $deviceId]);
             $response = ['success' => true, 'message' => "Posição ajustada para $positionMs ms"];
             break;
+        case 'repeat_mode':
+            try {
+                $state = $input['state'] ?? null;
+                $deviceId = $input['device_id'] ?? null;
+
+                if (!$state) {
+                    throw new Exception('Estado de repetição não especificado');
+                }
+                if (!$deviceId) {
+                    throw new Exception('Device ID não fornecido');
+                }
+
+                // Log dos parâmetros recebidos
+                error_log("repeat_mode: state=$state, device_id=$deviceId");
+
+                // Verifica se o dispositivo está ativo
+                $devices = $spotify->api->getMyDevices();
+                $deviceFound = false;
+                foreach ($devices->devices as $device) {
+                    if ($device->id === $deviceId) {
+                        $deviceFound = true;
+                        break;
+                    }
+                }
+                if (!$deviceFound) {
+                    throw new Exception("Dispositivo não encontrado ou não está ativo: $deviceId");
+                }
+
+                // Chama a função repeatMode definida em SpotifyClient.php
+                $spotify->repeatMode([
+                    'state' => $state,
+                    'device_id' => $deviceId
+                ]);
+
+                $response = [
+                    'success' => true,
+                    'message' => "Modo de repetição ajustado para '$state'"
+                ];
+            } catch (\Exception $e) {
+                $response = [
+                    'success' => false,
+                    'error' => 'Erro ao configurar o modo de repetição: ' . $e->getMessage()
+                ];
+                error_log("Erro em repeat_mode: " . $e->getMessage());
+            }
+            break;
+
 
         case 'get_current_track':
             $currentTrack = $spotify->getMyCurrentTrack($deviceId ? ['device_id' => $deviceId] : []);

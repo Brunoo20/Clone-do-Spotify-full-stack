@@ -43,7 +43,7 @@ body {
     justify-content: space-between;
 }
 
-.hut{
+.hut {
     display: flex;
     margin-left: 40rem;
 }
@@ -945,7 +945,7 @@ label.hidden-visually {
 .section-title.popular-artists:hover,
 .section-title.episodes-podcasts:hover,
 .section-title.new-albums:hover,
-.section-title.recently-played2:hover {
+.section-title.recently-played:hover {
     text-decoration: underline;
     cursor: pointer;
 }
@@ -2251,12 +2251,34 @@ label.hidden-visually {
 
 .random-order,
 .back,
-.next,
-.repeat {
+.next {
     fill: #b3b3b3;
     width: 16px;
     height: 16px;
 }
+
+.repeat-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.repeat-icon {
+    fill: #b3b3b3;
+    width: 16px;
+    height: 16px;
+}
+
+.repeat-button.active .repeat-icon{
+    fill: #1db954;
+}
+
+
 
 
 

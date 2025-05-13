@@ -116,7 +116,7 @@ $(document).ready(function () {
         mainContent.addClass('searched');
 
     }
-    console.log(renderBestResultAndTracks())
+ 
 
 
        // Função para "buscar" bestResult e tracks (apenas renderiza os dados recebidos)
@@ -204,7 +204,7 @@ $(document).ready(function () {
                     console.error('Erro ao retomar:', textStatus, jqXHR.responseText);
                 });
         } else {
-            console.log('Iniciando nova fila de artista nunca tocado');
+           
             sendSpotifyRequest('get_artist_top_tracks', { artist_id: artistId })
                 .done(function (data) {
                     if (data.success && data.tracks?.length > 0) {

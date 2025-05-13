@@ -55,10 +55,8 @@ $(document).ready(function () {
 
       .done(function (response) {
         if (response.success) {
-          console.log("Resultados:", response.results);
-          if (response.debug) {
-            console.log("Debug do backend:", response.debug);
-          }
+         
+         
           searchCache.set(cacheKey, {
             data: response.results,
             timestamp: Date.now(),
