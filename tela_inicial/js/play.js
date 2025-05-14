@@ -1,10 +1,16 @@
 // Intercepta requisições para cpapi.spotify.com para ignorar erros 403 e 404
+// Salva a função fetch original do navegador
 const originalFetch = window.fetch;
+// Substitui a função fetch global para interceptar chamadas específicas
 window.fetch = async function (input, init) {
+  // Extrai a URL da requisição (string ou objeto Request)
   const url = typeof input === "string" ? input : input.url;
+  // Verifica se a URL contém "cpapi.spotify.com"
   if (url.includes("cpapi.spotify.com")) {
     try {
+      // Executa a requisição original
       const response = await originalFetch(input, init);
+      // Ignora erros 403 (Proibido) ou 404 (Não encontrado), retornando uma resposta mock
       if (response.status === 403 || response.status === 404) {
         console.log(`Ignorando erro ${response.status} para cpapi.spotify.com`);
         return new Response(JSON.stringify({ success: true }), {
@@ -14,6 +20,7 @@ window.fetch = async function (input, init) {
       }
       return response;
     } catch (error) {
+      // Captura qualquer erro na requisição e retorna uma resposta mock
       console.log("Ignorando erro de fetch para cpapi.spotify.com");
       return new Response(JSON.stringify({ success: true }), {
         status: 200,
@@ -21,116 +28,123 @@ window.fetch = async function (input, init) {
       });
     }
   }
+  // Executa a requisição original para URLs não relacionadas a cpapi.spotify.com
   return originalFetch(input, init);
 };
 
 // Variáveis globais
 
-const volumeBar = $(".volume-bar"); // Elemento da barra de volume
-const reproductionBar = $(".playback-progress-bar input.reproduction-bar"); // Elemento da barra de reprodução (input dentro da barra de progresso)
+const volumeBar = $(".volume-bar"); // Seleciona o elemento da barra de volume
+const reproductionBar = $(".playback-progress-bar input.reproduction-bar"); // Seleciona o input da barra de reprodução dentro do elemento de progresso
+// Botões de avançar e retroceder
 const next = $(".next");
 const back = $(".back");
-const repeatButton = $(".repeat-button");
+const repeatButton = $(".repeat-button"); // Botão de modo de repetição
 
 let currentRepeatMode = "off"; // Estado inicial do modo de repetição
-let previousVolume = volumeBar.val(); // Armazena o volume inicial da barra de volume
-let isVolumeHovered = false; // Variável para rastrear se o mouse está sobre a barra de volume
-let isReproductionHovered = false; // Variável para rastrear se o mouse está sobre a barra de reprodução
-let player = null; // Objeto do player (será inicializado posteriormente)
+let previousVolume = volumeBar.val(); // Armazena o volume inicial da barra
+let isVolumeHovered = false; // Indica se o mouse está sobre a barra de volume
+let isReproductionHovered = false; // Indica se o mouse está sobre a barra de reprodução
+let player = null; // Objeto do player Spotify (inicializado posteriormente)
 let deviceId = null; // ID do dispositivo associado ao player
-let isPlayingPodcast = false; // Estado da reprodução (true = reproduzindo, false = pausado)
-let isPlayingBestResult = false;
-let isPlaying2 = false; // Variável para evitar múltiplas requisições simultâneas
-let currentPodcastUri = null; // URI do podcast que está sendo reproduzido no momento
-
-let previousPodcastUri = null; // URI do podcast que foi reproduzido anteriormente
-let previousTrackUri;
+let isPlayingPodcast = false; // Indica se um podcast está sendo reproduzido
+let isPlayingBestResult = false; // Indica se o conteúdo do "melhor resultado" está sendo reproduzido
+let isPlaying2 = false; // Evita múltiplas requisições simultâneas
+let currentPodcastUri = null; // URI do podcast atualmente em reprodução
+let previousPodcastUri = null; // URI do podcast reproduzido anteriormente
+let previousTrackUri; // URI da faixa reproduzida anteriormente
 let positionUpdateInterval = null; // Intervalo para atualização da posição de reprodução
-let podcastPositions = {}; // Objeto que armazena a posição de reprodução de diferentes podcasts
-let trackPositions = {}; // objeto para armazenar posições de faixas
-let justPaused = false; // Indica se a reprodução acabou de ser pausada (para evitar ações indesejadas)
-let isSeeking = false; // Indica se o usuário está buscando uma posição específica na reprodução (seeking)
-let lastSeekPosition = null; // Armazena a última posição de busca (seek) realizada
-let localVolume = 100; // Volume local armazenado para controle (padrão: 100%)
-let isVolumeInitialized = false;
-let isFirstPlay = true; // Indica se é a primeira vez que um podcast está sendo reproduzido
-let lastTrackUri = null; //Variável para armazenar a URI da última faixa exibida
-let lastPodcastUri = null;
-let currentTrackUri = null;
-let isPlayingTracks = false;
-let topTracks = [];
-let currentTrackIndex = 0;
+let podcastPositions = {}; // Objeto para armazenar posições de reprodução de podcasts
+let trackPositions = {}; // Objeto para armazenar posições de reprodução de faixas
+let justPaused = false; // Indica se a reprodução foi pausada recentemente
+let isSeeking = false; // Indica se o usuário está ajustando a posição de reprodução
+let lastSeekPosition = null; // Última posição de busca (seek) realizada
+let localVolume = 100; // Volume local armazenado (padrão: 100%)
+let isVolumeInitialized = false; // Indica se o volume foi inicializado
+let isFirstPlay = true; // Indica se é a primeira reprodução
+let lastTrackUri = null; // URI da última faixa exibida
+let lastPodcastUri = null; // URI do último podcast exibido
+let currentTrackUri = null; // URI da faixa atual
+let isPlayingTracks = false; // Indica se faixas estão sendo reproduzidas
+let topTracks = []; // Lista de faixas principais (top tracks)
+let currentTrackIndex = 0; // Índice da faixa atual na lista topTracks
 
 // Função para formatar o tempo (milissegundos para MM:SS ou H:MM:SS)
 function formatTime(ms) {
   // Converte milissegundos para segundos
   const totalSeconds = Math.floor(ms / 1000);
-
-  //Divide o total de segundos por 3600 (1h = 3600s)
+  // Calcula horas
   const hours = Math.floor(totalSeconds / 3600);
-
-  //Obtém os minutos restantes dividindo por 60
+  // Calcula minutos restantes
   const minutes = Math.floor((totalSeconds % 3600) / 60);
-
-  //Pega o que sobra após dividir por 60
+  // Calcula segundos restantes
   const seconds = totalSeconds % 60;
 
-  // Se a duração for maior que 1 hora, usa o formato H:MM:SS
+  // Retorna formato H:MM:SS se houver horas
   if (hours > 0) {
     return `${hours}:${minutes.toString().padStart(2, "0")}:${seconds
       .toString()
       .padStart(2, "0")}`;
   }
-  // Caso contrário, usa o formato MM:SS
+  // Retorna formato MM:SS para durações menores
   return `${minutes}:${seconds.toString().padStart(2, "0")}`;
 }
 
 // Função para atualizar o gradiente da barra de reprodução
 function updateGradientReproductionBar() {
+  // Obtém a posição atual e a duração total da barra
   const position = parseInt(reproductionBar.val(), 10);
   const duration = parseInt(reproductionBar.attr("max"), 10) || 1;
+  // Calcula a porcentagem de progresso
   const percentage = (position / duration) * 100;
+  // Define a cor com base no estado de hover
   const color = isReproductionHovered ? "#1db954" : "#fff";
+  // Aplica o gradiente à barra
   reproductionBar.css(
     "background",
     `linear-gradient(to right, ${color} ${percentage}%, #666 ${percentage}%)`
   );
 }
 
-// Função para atualizar a posição e a barra de progresso (usada apenas durante reprodução normal)
+// Função para atualizar a posição e a barra de progresso durante a reprodução
 function updatePlaybackPosition() {
+  // Sai se o player não está definido, não está reproduzindo ou está buscando
   if (!player || !isPlayingPodcast || !isPlayingBestResult || isSeeking) return;
 
+  // Obtém o estado atual do player
   player
     .getCurrentState()
     .then((state) => {
       if (!state) return;
 
+      // Obtém posição e duração do conteúdo
       let position = state.position || 0;
       const duration = state.duration || 0;
       const currentUri = currentPodcastUri || currentTrackUri;
       const isPodcast = currentUri?.startsWith("spotify:episode:");
 
+      // Se pausado recentemente, usa a posição salva
       if (justPaused && position === 0 && currentUri) {
         position = isPodcast
           ? podcastPositions[currentUri]
           : trackPositions[currentUri];
       }
 
-      // Se houve um seek recente, ignorar a posição do estado até que ela esteja próxima da buscada
+      // Ignora atualização se a posição diverge muito de um seek recente
       if (
         lastSeekPosition !== null &&
         Math.abs(position - lastSeekPosition) > 1000
       ) {
-        return; // Ignora atualização automática até o seek ser refletido
+        return;
       }
 
+      // Formata a posição e duração para exibição
       const formattedPosition = formatTime(position);
       const formattedDuration = formatTime(duration);
 
+      // Atualiza os elementos de interface
       $(".playback-position").text(formattedPosition);
       $(".playback-duration").text(formattedDuration);
-
       reproductionBar.attr("max", duration);
       reproductionBar.val(position);
       updateGradientReproductionBar();
@@ -142,6 +156,7 @@ function updatePlaybackPosition() {
 
 // Função para ajustar a posição de reprodução (seek)
 function seek(positionMs) {
+  // Verifica se o player e o deviceId estão disponíveis
   if (!player || !deviceId) {
     console.error("Player ou deviceId não estão disponíveis.");
     return;
@@ -151,27 +166,31 @@ function seek(positionMs) {
   const formattedPosition = formatTime(positionMs);
   $(".playback-position").text(formattedPosition);
   reproductionBar.val(positionMs);
+  // Determina se é podcast ou faixa
   const currentUri = currentPodcastUri || currentTrackUri;
   const isPodcast = currentUri?.startsWith("spotify:episode:");
+  // Armazena a posição atual
   if (currentUri) {
     if (isPodcast) {
-      podcastPositions[currentUri] = positionMs; // Atualiza a posição armazenada
+      podcastPositions[currentUri] = positionMs;
     } else {
       trackPositions[currentUri] = positionMs;
     }
   }
 
+  // Define a última posição de busca
   lastSeekPosition = positionMs;
 
-  // Envia a requisição ao backend
+  // Envia a requisição de seek ao backend
   sendSpotifyRequest("seek", { device_id: deviceId, position_ms: positionMs })
     .done(function (response) {
       if (response.success) {
         console.log(`Busca realizada com sucesso para ${positionMs}ms`);
+        // Verifica o estado atual para confirmar a posição
         player.getCurrentState().then((state) => {
           if (state) {
             if (!isPodcast) trackPositions[currentTrackUri] = state.position;
-            lastSeekPosition = null; // Reseta imediatamente após confirmação
+            lastSeekPosition = null; // Reseta após confirmação
           }
         });
       } else {
@@ -186,12 +205,12 @@ function seek(positionMs) {
     });
 }
 
+// Função para atualizar os ícones de play/pause na interface
 function updateIcons(isPlaying) {
   const pauseIconMain = $(".play-pause-button .pause");
   const playIconMain = $(".play-pause-button .play");
 
-  // Verifica o estado atual do player para maior consistência
-
+  // Atualiza o botão principal de play/pause
   if (isPlaying) {
     playIconMain.hide();
     pauseIconMain.show();
@@ -200,10 +219,10 @@ function updateIcons(isPlaying) {
     pauseIconMain.hide();
   }
 
+  // Atualiza os ícones nos botões de "melhor resultado"
   $(".best-result-button").each(function () {
     const playIcon = $(this).find(".play-icon-best-result");
     const pauseIcon = $(this).find(".pause-icon-best-result");
-
     if (isPlaying) {
       playIcon.removeClass("active");
       pauseIcon.addClass("active");
@@ -214,12 +233,15 @@ function updateIcons(isPlaying) {
   });
 }
 
+// Função para reproduzir conteúdo (podcast ou faixa)
 function playContent(uri, positionMs, contentData = null) {
+  // Verifica se o deviceId está disponível
   if (!deviceId) {
     console.error("Device ID não disponível.");
     return;
   }
 
+  // Evita chamadas duplicadas
   if (isPlaying2) {
     console.log("Reprodução já em andamento, ignorando chamada duplicada.");
     return;
@@ -227,21 +249,23 @@ function playContent(uri, positionMs, contentData = null) {
 
   isPlaying2 = true;
 
-  // Determina se é podcast ou faixa com base no URI
+  // Determina o tipo de conteúdo
   const isPodcast = uri.startsWith("spotify:episode:");
   const contentType = isPodcast ? "podcast" : "track";
 
+  // Envia a requisição de play ao backend
   sendSpotifyRequest("play", {
     device_id: deviceId,
-    uris: [uri], // Envia como array para suportar filas
+    uris: [uri],
     position_ms: positionMs,
   })
     .done((response) => {
       console.log("Resposta do play:", response);
       if (response.success) {
+        // Atualiza estados de reprodução
         isPlayingPodcast = true;
         isPlayingBestResult = true;
-        // Atualiza a URI atual com base no tipo de conteúdo
+        // Atualiza URIs com base no tipo de conteúdo
         if (isPodcast) {
           currentPodcastUri = uri;
           currentTrackUri = null;
@@ -254,12 +278,12 @@ function playContent(uri, positionMs, contentData = null) {
           trackPositions[uri] = trackPositions[uri] || positionMs || 0;
         }
 
-        // Usa os dados fornecidos ou os retornados pelo backend
+        // Usa os dados fornecidos ou retornados para atualizar a interface
         const dataToUse = response.data || contentData;
         console.log(dataToUse);
         if (dataToUse) {
           $(".content-name").text(dataToUse.name);
-          $(".content-artista").text(dataToUse.artist); // Para podcasts, "artist" é o nome do show
+          $(".content-artista").text(dataToUse.artist);
           if (dataToUse.album_image) {
             $(".content-img").attr("src", dataToUse.album_image).show();
           } else {
@@ -269,7 +293,6 @@ function playContent(uri, positionMs, contentData = null) {
           console.warn(
             `Nenhum dado retornado para ${contentType}, tentando buscar manualmente`
           );
-          // Caso o backend não retorne dados, tenta buscar manualmente
           getCurrentContent();
         }
 
@@ -287,19 +310,22 @@ function playContent(uri, positionMs, contentData = null) {
     });
 }
 
+// Função para obter informações do conteúdo atual
 function getCurrentContent() {
+  // Verifica se o deviceId está disponível
   if (!deviceId) {
     console.error("Device ID não disponível.");
     return;
   }
 
+  // Envia a requisição para obter a faixa atual
   sendSpotifyRequest("get_current_track", { device_id: deviceId })
     .done(function (response) {
       if (response.success && response.data) {
         const contentData = response.data;
         const isPodcast = contentData.uri.startsWith("spotify:episode: ");
 
-        // Atualiza as URIs globais com base no tipo
+        // Atualiza URIs globais
         if (isPodcast) {
           currentPodcastUri = contentData.uri;
           currentTrackUri = null;
@@ -310,6 +336,7 @@ function getCurrentContent() {
           lastTrackUri = contentData.uri;
         }
 
+        // Atualiza a interface
         $(".content-name").text(contentData.name);
         $(".content-artista").text(contentData.artist);
         if (contentData.album_image) {
@@ -333,11 +360,14 @@ function getCurrentContent() {
     });
 }
 
+// Função chamada quando o Spotify Web Playback SDK está pronto
 window.onSpotifyWebPlaybackSDKReady = () => {
+  // Obtém o token de autenticação
   sendSpotifyRequest("get_token").done(function (response) {
     if (response.success) {
       const token = response.token;
 
+      // Inicializa o player Spotify
       player = new Spotify.Player({
         name: "web Playback SDK Player",
         getOAuthToken: (cb) => {
@@ -346,21 +376,24 @@ window.onSpotifyWebPlaybackSDKReady = () => {
         volume: 1.0, // Volume inicial em 100%
       });
 
+      // Listener para quando o dispositivo está pronto
       player.addListener("ready", ({ device_id }) => {
         deviceId = device_id;
       });
 
+      // Listener para quando o dispositivo fica offline
       player.addListener("not_ready", ({ device_id }) => {
         console.log("Dispositivo offline com ID:", device_id);
       });
 
+      // Listener para mudanças no estado do player
       player.addListener("player_state_changed", (state) => {
         if (!state || state.loading || isPlaying2) return;
 
         const currentUri = state.track_window.current_track.uri;
         const isPodcast = currentUri.startsWith("spotify:episode:");
 
-        // Atualiza as URIs globais e sincroniza currentTrackIndex
+        // Atualiza URIs globais e sincroniza currentTrackIndex
         if (isPodcast) {
           currentPodcastUri = currentUri;
           currentTrackUri = null;
@@ -373,7 +406,7 @@ window.onSpotifyWebPlaybackSDKReady = () => {
           currentPodcastUri = null;
           if (currentUri !== lastTrackUri) {
             lastTrackUri = currentUri;
-            // Sincroniza currentTrackIndex com a faixa atual em topTracks
+            // Sincroniza currentTrackIndex com a faixa atual
             const newIndex = topTracks.findIndex(
               (track) => track.uri === currentUri
             );
@@ -388,10 +421,11 @@ window.onSpotifyWebPlaybackSDKReady = () => {
           }
         }
 
+        // Atualiza estados de reprodução
         isPlayingPodcast = !state.paused;
         isPlayingBestResult = !state.paused;
 
-        // Atualiza posições
+        // Armazena a posição atual, exceto durante seek
         if (!isSeeking && state.position > 0) {
           if (isPodcast) {
             podcastPositions[currentUri] = state.position;
@@ -400,7 +434,7 @@ window.onSpotifyWebPlaybackSDKReady = () => {
           }
         }
 
-        // Verifica se a faixa terminou e toca a próxima da fila
+        // Verifica se a faixa terminou e toca a próxima
         if (
           !isPodcast &&
           state.paused &&
@@ -414,30 +448,28 @@ window.onSpotifyWebPlaybackSDKReady = () => {
             currentIndex: currentIndex,
             position: state.position,
             duration: state.duration,
-            conditionMet: state.position >= state.duration - 20000, // 20 segundos
+            conditionMet: state.position >= state.duration - 20000,
           });
           if (currentIndex !== -1 && state.position >= state.duration - 20000) {
             if (currentIndex + 1 < topTracks.length) {
               currentTrackIndex = currentIndex + 1;
               const nextTrack = topTracks[currentTrackIndex];
-             
               isPlayingPodcast = true;
               isPlayingBestResult = true;
               playContent(nextTrack.uri, 0, nextTrack).then(() => {
                 updateIcons(true);
               });
-              return; // Evita duplicação de lógica
+              return;
             } else {
               console.log("Fim da fila de faixas.");
-              isPlayingPodcast = false; // Para a reprodução ao final da fila
+              isPlayingPodcast = false;
               isPlayingBestResult = false;
-
               updateIcons(false);
             }
           }
         }
 
-        // Atualiza o volume
+        // Sincroniza o volume
         const stateVolume = Math.round(state.playback_volume * 100);
         if (!isVolumeInitialized) {
           if (isFirstPlay && stateVolume !== 100) {
@@ -467,7 +499,7 @@ window.onSpotifyWebPlaybackSDKReady = () => {
           playIconMain.show();
         }
 
-        // Atualiza os ícones dos cards de podcast
+        // Atualiza ícones dos cards de podcast
         if (previousPodcastUri && previousPodcastUri !== currentPodcastUri) {
           const previousCard = $(
             `.episodes-podcasts-card[data-podcast-uri="${previousPodcastUri}"]`
@@ -495,7 +527,7 @@ window.onSpotifyWebPlaybackSDKReady = () => {
           }
         }
 
-        // Atualiza ícones de todos os .best-result-button
+        // Atualiza ícones de todos os botões de "melhor resultado"
         $(".best-result-button").each(function () {
           const playIcon = $(this).find(".play-icon-best-result");
           const pauseIcon = $(this).find(".pause-icon-best-result");
@@ -508,7 +540,7 @@ window.onSpotifyWebPlaybackSDKReady = () => {
           }
         });
 
-        // Atualiza a posição
+        // Atualiza a posição de reprodução
         if (!isSeeking && lastSeekPosition === null) {
           let position = state.position;
           const duration = state.duration;
@@ -516,21 +548,22 @@ window.onSpotifyWebPlaybackSDKReady = () => {
           const isPodcastToUse =
             currentUriToUse?.startsWith("spotify:episode:");
 
+          // Usa posição salva se pausado recentemente
           if (justPaused && position === 0 && currentUriToUse) {
             position = isPodcastToUse
               ? podcastPositions[currentUriToUse] || 0
               : trackPositions[currentUriToUse] || 0;
           }
 
+          // Atualiza a interface
           const formattedPosition = formatTime(position);
           const formattedDuration = formatTime(duration);
-
           $(".playback-position").text(formattedPosition);
           $(".playback-duration").text(formattedDuration);
-
           reproductionBar.attr("max", duration);
           reproductionBar.val(position);
 
+          // Gerencia o intervalo de atualização da posição
           if (
             isPlayingPodcast &&
             isPlayingBestResult &&
@@ -548,18 +581,17 @@ window.onSpotifyWebPlaybackSDKReady = () => {
             justPaused = true;
           }
 
-          // Verifica se deve forçar seek para posição salva
+          // Força seek para posição salva, se necessário
           if (
             position === 0 &&
             currentUriToUse &&
             isPlayingPodcast &&
-            isPlayingBestResult&&
+            isPlayingBestResult &&
             currentRepeatMode !== "track"
           ) {
             const savedPosition = isPodcast
               ? podcastPositions[currentUriToUse]
               : trackPositions[currentUriToUse];
-
             if (savedPosition > 0) {
               console.log(
                 `Forçando seek para posição salva: ${savedPosition}ms`
@@ -570,8 +602,10 @@ window.onSpotifyWebPlaybackSDKReady = () => {
         }
       });
 
+      // Listener para erros de autenticação
       player.addListener("authentication_error", ({ message }) => {
         console.error("Erro de autenticação:", message);
+        // Tenta atualizar o token
         sendSpotifyRequest("refresh_token").done(function (response) {
           if (response.success) {
             player.setOAuthToken(response.token);
@@ -579,13 +613,16 @@ window.onSpotifyWebPlaybackSDKReady = () => {
         });
       });
 
+      // Conecta o player
       player.connect();
     } else {
+      // Redireciona para a página inicial se o token não for obtido
       window.location.replace("../firstPage.php");
     }
   });
 };
 
+// Função para enviar requisições ao backend
 function sendSpotifyRequest(action, data = []) {
   return $.ajax({
     url: "Search/Get_player.php",
@@ -596,7 +633,9 @@ function sendSpotifyRequest(action, data = []) {
   });
 }
 
+// Código executado quando o DOM está pronto
 $(document).ready(function () {
+  // Inicializa a funcionalidade de busca, se disponível
   if (typeof window.initSearch === "function") {
     window.initSearch();
   } else {
@@ -605,11 +644,12 @@ $(document).ready(function () {
     );
   }
 
+  // Seleciona elementos da interface
   const volumeIcon = $(".volume-icon");
   const alignVolumeBar = $(".align-volume-bar");
   const playAndPause = $(".play-pause-button");
 
-  // Função para atualizar o gradiente da barra
+  // Função para atualizar o gradiente da barra de volume
   function updateGradientVolumeBar() {
     const volume = volumeBar.val();
     const color = isVolumeHovered ? "#1db954" : "#fff";
@@ -630,7 +670,7 @@ $(document).ready(function () {
     updateGradientReproductionBar();
   });
 
-  // Eventos para ajustar a posição ao interagir com a barra
+  // Eventos para ajustar a posição de reprodução
   reproductionBar.on("mousedown", function () {
     isSeeking = true;
   });
@@ -639,7 +679,7 @@ $(document).ready(function () {
     const positionMs = parseInt($(this).val(), 10);
     const formattedPosition = formatTime(positionMs);
     $(".playback-position").text(formattedPosition);
-    updateGradientReproductionBar(); // Atualiza o gradiente enquanto arrasta
+    updateGradientReproductionBar();
   });
 
   reproductionBar.on("change", function () {
@@ -650,12 +690,14 @@ $(document).ready(function () {
 
   reproductionBar.on("click", function (e) {
     e.preventDefault();
+    // Calcula a posição clicada na barra
     const rect = this.getBoundingClientRect();
     const clickX = e.clientX - rect.left;
     const width = rect.width;
     const duration = parseInt($(this).attr("max"), 10) || 0;
     const positionMs = Math.floor((clickX / width) * duration);
 
+    // Atualiza a interface e realiza o seek
     $(this).val(positionMs);
     const formattedPosition = formatTime(positionMs);
     $(".playback-position").text(formattedPosition);
@@ -663,12 +705,13 @@ $(document).ready(function () {
     seek(positionMs);
   });
 
-  // Evento de input para o slider
+  // Evento de input para a barra de volume
   volumeBar.on("input", function () {
     let volume = $(this).val();
     localVolume = volume;
     updateGradientVolumeBar();
 
+    // Ajusta o volume no player
     if (player) {
       player
         .setVolume(volume / 100)
@@ -678,64 +721,62 @@ $(document).ready(function () {
         });
     }
 
-    // Lógica para trocar o ícone com base no volume
+    // Atualiza o ícone de volume com base no nível
     if (volume == 0) {
-      volumeIcon.html(` 
-                <svg role="presentation" aria-label="Sem som" aria-hidden="false">
-                    <path d="M13.86 5.47a.75.75 0 0 0-1.061 0l-1.47 1.47-1.47-1.47A.75.75 0 0 0 8.8 6.53L10.269 8l-1.47 1.47a.75.75 0 1 0 1.06 1.06l1.47-1.47 1.47 1.47a.75.75 0 0 0 1.06-1.06L12.39 8l1.47-1.47a.75.75 0 0 0 0-1.06z"></path>
-                    <path d="M10.116 1.5A.75.75 0 0 0 8.991.85l-6.925 4a3.642 3.642 0 0 0-1.33 4.967 3.639 3.639 0 0 0 1.33 1.332l6.925 4a.75.75 0 0 0 1.125-.649v-1.906a4.73 4.73 0 0 1-1.5-.694v1.3L2.817 9.852a2.141 2.141 0 0 1-.781-2.92c.187-.324.456-.594.78-.782l5.8-3.35v1.3c.45-.313.956-.55 1.5-.694V1.5z"></path>
-                </svg>
-            `);
+      volumeIcon.html(`
+        <svg role="presentation" aria-label="Sem som" aria-hidden="false">
+            <path d="M13.86 5.47a.75.75 0 0 0-1.061 0l-1.47 1.47-1.47-1.47A.75.75 0 0 0 8.8 6.53L10.269 8l-1.47 1.47a.75.75 0 1 0 1.06 1.06l1.47-1.47 1.47 1.47a.75.75 0 0 0 1.06-1.06L12.39 8l1.47-1.47a.75.75 0 0 0 0-1.06z"></path>
+            <path d="M10.116 1.5A.75.75 0 0 0 8.991.85l-6.925 4a3.642 3.642 0 0 0-1.33 4.967 3.639 3.639 0 0 0 1.33 1.332l6.925 4a.75.75 0 0 0 1.125-.649v-1.906a4.73 4.73 0 0 1-1.5-.694v1.3L2.817 9.852a2.141 2.141 0 0 1-.781-2.92c.187-.324.456-.594.78-.782l5.8-3.35v1.3c.45-.313.956-.55 1.5-.694V1.5z"></path>
+        </svg>
+      `);
     } else if (volume > 0 && volume <= 30) {
-      volumeIcon.html(` 
-                <svg role="presentation" aria-label="Volume baixo" aria-hidden="false">
-                    <path d="M9.741.85a.75.75 0 0 1 .375.65v13a.75.75 0 0 1-1.125.65l-6.925-4a3.642 3.642 0 0 1-1.33-4.967 3.639 3.639 0 0 1 1.33-1.332l6.925-4a.75.75 0 0 1 .75 0zm-6.924 5.3a2.139 2.139 0 0 0 0 3.7l5.8 3.35V2.8l-5.8 3.35zm8.683 4.29V5.56a2.75 2.75 0 0 1 0 4.88z"></path>
-                </svg>
-            `);
+      volumeIcon.html(`
+        <svg role="presentation" aria-label="Volume baixo" aria-hidden="false">
+            <path d="M9.741.85a.75.75 0 0 1 .375.65v13a.75.75 0 0 1-1.125.65l-6.925-4a3.642 3.642 0 0 1-1.33-4.967 3.639 3.639 0 0 1 1.33-1.332l6.925-4a.75.75 0 0 1 .75 0zm-6.924 5.3a2.139 2.139 0 0 0 0 3.7l5.8 3.35V2.8l-5.8 3.35zm8.683 4.29V5.56a2.75 2.75 0 0 1 0 4.88z"></path>
+        </svg>
+      `);
     } else if (volume > 30 && volume <= 65) {
       volumeIcon.html(`
-                <svg role="presentation" aria-label="Volume médio" aria-hidden="false">
-                    <path d="M9.741.85a.75.75 0 0 1 .375.65v13a.75.75 0 0 1-1.125.65l-6.925-4a3.642 3.642 0 0 1-1.33-4.967 3.639 3.639 0 0 1 1.33-1.332l6.925-4a.75.75 0 0 1 .75 0zm-6.924 5.3a2.139 2.139 0 0 0 0 3.7l5.8 3.35V2.8l-5.8 3.35zm8.683 6.087a4.502 4.502 0 0 0 0-8.474v1.65a2.999 2.999 0 0 1 0 5.175v1.649z"></path>
-                </svg>
-            `);
+        <svg role="presentation" aria-label="Volume médio" aria-hidden="false">
+            <path d="M9.741.85a.75.75 0 0 1 .375.65v13a.75.75 0 0 1-1.125.65l-6.925-4a3.642 3.642 0 0 1-1.33-4.967 3.639 3.639 0 0 1 1.33-1.332l6.925-4a.75.75 0 0 1 .75 0zm-6.924 5.3a2.139 2.139 0 0 0 0 3.7l5.8 3.35V2.8l-5.8 3.35zm8.683 6.087a4.502 4.502 0 0 0 0-8.474v1.65a2.999 2.999 0 0 1 0 5.175v1.649z"></path>
+        </svg>
+      `);
     } else if (volume > 65 && volume <= 100) {
       volumeIcon.html(`
-                <svg role="presentation" aria-label="Volume alto" aria-hidden="false">
-                    <path d="M9.741.85a.75.75 0 0 1 .375.65v13a.75.75 0 0 1-1.125.65l-6.925-4a3.642 3.642 0 0 1-1.33-4.967 3.639 3.639 0 0 1 1.33-1.332l6.925-4a.75.75 0 0 1 .75 0zm-6.924 5.3a2.139 2.139 0 0 0 0 3.7l5.8 3.35V2.8l-5.8 3.35zm8.683 4.29V5.56a2.75 2.75 0 0 1 0 4.88z"></path>
-                    <path d="M11.5 13.614a5.752 5.752 0 0 0 0-11.228v1.55a4.252 4.252 0 0 1 0 8.127v1.55z"></path>
-                </svg>
-            `);
+        <svg role="presentation" aria-label="Volume alto" aria-hidden="false">
+            <path d="M9.741.85a.75.75 0 0 1 .375.65v13a.75.75 0 0 1-1.125.65l-6.925-4a3.642 3.642 0 0 1-1.33-4.967 3.639 3.639 0 0 1 1.33-1.332l6.925-4a.75.75 0 0 1 .75 0zm-6.924 5.3a2.139 2.139 0 0 0 0 3.7l5.8 3.35V2.8l-5.8 3.35zm8.683 4.29V5.56a2.75 2.75 0 0 1 0 4.88z"></path>
+            <path d="M11.5 13.614a5.752 5.752 0 0 0 0-11.228v1.55a4.252 4.252 0 0 1 0 8.127v1.55z"></path>
+        </svg>
+      `);
     }
   });
 
-  // Evento de clique no ícone para mutar/desmutar
+  // Evento de clique no ícone de volume para mutar/desmutar
   volumeIcon.parent().on("click", function () {
     let currentVolume = volumeBar.val();
     if (currentVolume > 0) {
-      // Se o volume for maior que 0, armazenamos o valor e mutamos
-      previousVolume = currentVolume; // Salva o volume antes de mutar
+      // Salva o volume atual e muta
+      previousVolume = currentVolume;
       volumeBar.val(0).trigger("input");
-
       volumeIcon.html(`
-                <svg role="presentation" aria-label="Sem som" aria-hidden="false">
-                    <path d="M13.86 5.47a.75.75 0 0 0-1.061 0l-1.47 1.47-1.47-1.47A.75.75 0 0 0 8.8 6.53L10.269 8l-1.47 1.47a.75.75 0 1 0 1.06 1.06l1.47-1.47 1.47 1.47a.75.75 0 0 0 1.06-1.06L12.39 8l1.47-1.47a.75.75 0 0 0 0-1.06z"></path>
-                    <path d="M10.116 1.5A.75.75 0 0 0 8.991.85l-6.925 4a3.642 3.642 0 0 0-1.33 4.967 3.639 3.639 0 0 0 1.33 1.332l6.925 4a.75.75 0 0 0 1.125-.649v-1.906a4.73 4.73 0 0 1-1.5-.694v1.3L2.817 9.852a2.141 2.141 0 0 1-.781-2.92c.187-.324.456-.594.78-.782l5.8-3.35v1.3c.45-.313.956-.55 1.5-.694V1.5z"></path>
-                </svg>
-            `);
+        <svg role="presentation" aria-label="Sem som" aria-hidden="false">
+            <path d="M13.86 5.47a.75.75 0 0 0-1.061 0l-1.47 1.47-1.47-1.47A.75.75 0 0 0 8.8 6.53L10.269 8l-1.47 1.47a.75.75 0 1 0 1.06 1.06l1.47-1.47 1.47 1.47a.75.75 0 0 0 1.06-1.06L12.39 8l1.47-1.47a.75.75 0 0 0 0-1.06z"></path>
+            <path d="M10.116 1.5A.75.75 0 0 0 8.991.85l-6.925 4a3.642 3.642 0 0 0-1.33 4.967 3.639 3.639 0 0 0 1.33 1.332l6.925 4a.75.75 0 0 0 1.125-.649v-1.906a4.73 4.73 0 0 1-1.5-.694v1.3L2.817 9.852a2.141 2.141 0 0 1-.781-2.92c.187-.324.456-.594.78-.782l5.8-3.35v1.3c.45-.313.956-.55 1.5-.694V1.5z"></path>
+        </svg>
+      `);
     } else {
-      // Se o volume já está 0, restauramos o volume anterior
-      volumeBar.val(previousVolume).trigger("input"); // Restaura o volume salvo
-
+      // Restaura o volume anterior
+      volumeBar.val(previousVolume).trigger("input");
       volumeIcon.html(`
-                <svg role="presentation" aria-label="Volume alto" aria-hidden="false">
-                    <path d="M9.741.85a.75.75 0 0 1 .375.65v13a.75.75 0 0 1-1.125.65l-6.925-4a3.642 3.642 0 0 1-1.33-4.967 3.639 3.639 0 0 1 1.33-1.332l6.925-4a.75.75 0 0 1 .75 0zm-6.924 5.3a2.139 2.139 0 0 0 0 3.7l5.8 3.35V2.8l-5.8 3.35zm8.683 4.29V5.56a2.75 2.75 0 0 1 0 4.88z"></path>
-                    <path d="M11.5 13.614a5.752 5.752 0 0 0 0-11.228v1.55a4.252 4.252 0 0 1 0 8.127v1.55z"></path>
-                </svg>
-            `);
+        <svg role="presentation" aria-label="Volume alto" aria-hidden="false">
+            <path d="M9.741.85a.75.75 0 0 1 .375.65v13a.75.75 0 0 1-1.125.65l-6.925-4a3.642 3.642 0 0 1-1.33-4.967 3.639 3.639 0 0 1 1.33-1.332l6.925-4a.75.75 0 0 1 .75 0zm-6.924 5.3a2.139 2.139 0 0 0 0 3.7l5.8 3.35V2.8l-5.8 3.35zm8.683 4.29V5.56a2.75 2.75 0 0 1 0 4.88z"></path>
+            <path d="M11.5 13.614a5.752 5.752 0 0 0 0-11.228v1.55a4.252 4.252 0 0 1 0 8.127v1.55z"></path>
+        </svg>
+      `);
     }
   });
 
-  // Eventos de hover para mudar a cor do gradiente
+  // Eventos de hover para a barra de volume
   alignVolumeBar.on("mouseenter", function () {
     isVolumeHovered = true;
     updateGradientVolumeBar();
@@ -746,17 +787,17 @@ $(document).ready(function () {
     updateGradientVolumeBar();
   });
 
-  // Configuração inicial
+  // Configuração inicial do volume
   volumeBar.val(localVolume).trigger("input");
 
-  // Função para o play e pause
+  // Função para alternar entre play e pause
   function togglePlayPause() {
     if (!deviceId) {
       console.error("ID do dispositivo não está disponível.");
       return;
     }
     if (isPlayingPodcast && isPlayingBestResult) {
-      // Pausar a reprodução
+      // Pausa a reprodução
       sendSpotifyRequest("pause", { device_id: deviceId })
         .done(function (response) {
           if (response.success) {
@@ -772,7 +813,7 @@ $(document).ready(function () {
           console.log("Resposta do servidor:", jqXHR.responseText);
         });
     } else {
-      // Retomar a reprodução da posição atual
+      // Retoma a reprodução
       const currentUri = currentTrackUri || currentPodcastUri;
       if (!currentUri) {
         console.error("Nenhuma URI de faixa/podcast encontrada.");
@@ -786,7 +827,7 @@ $(document).ready(function () {
       sendSpotifyRequest("play", {
         device_id: deviceId,
         uris: [currentUri],
-        position_ms: positionMs, // Adiciona a posição atual
+        position_ms: positionMs,
       })
         .done(function (response) {
           if (response.success) {
@@ -796,8 +837,7 @@ $(document).ready(function () {
             );
             isPlayingPodcast = true;
             isPlayingBestResult = true;
-
-            // Garante que o volume local seja mantido ao retomar
+            // Restaura o volume local
             player.setVolume(localVolume / 100).then(() => {
               console.log("Volume restaurado ao retomar:", localVolume);
               volumeBar.val(localVolume).trigger("input");
@@ -813,6 +853,7 @@ $(document).ready(function () {
     }
   }
 
+  // Evento de clique no botão de retroceder
   back.on("click", function (e) {
     e.preventDefault();
     if (!deviceId) {
@@ -827,7 +868,7 @@ $(document).ready(function () {
 
     isPlaying2 = true;
 
-    // Verificar contexto de reprodução
+    // Verifica o contexto de reprodução
     player
       .getCurrentState()
       .then((state) => {
@@ -852,8 +893,10 @@ $(document).ready(function () {
       });
   });
 
+  // Função para reproduzir a faixa anterior manualmente
   function previousTrackManualy() {
     if (topTracks && topTracks.length > 1) {
+      // Calcula o índice da faixa anterior
       const backIndex = (currentTrackIndex - 1) % topTracks.length;
       sendSpotifyRequest("play", {
         device_id: deviceId,
@@ -889,6 +932,7 @@ $(document).ready(function () {
     }
   }
 
+  // Evento de clique no botão de avançar
   next.on("click", function (e) {
     e.preventDefault();
     if (!deviceId) {
@@ -903,7 +947,7 @@ $(document).ready(function () {
 
     isPlaying2 = true;
 
-    // Verificar contexto de reprodução
+    // Verifica o contexto de reprodução
     player
       .getCurrentState()
       .then((state) => {
@@ -928,8 +972,10 @@ $(document).ready(function () {
       });
   });
 
+  // Função para reproduzir a próxima faixa manualmente
   function playNextTrackManually() {
     if (topTracks && topTracks.length > 1) {
+      // Calcula o índice da próxima faixa
       const nextIndex = (currentTrackIndex + 1) % topTracks.length;
       sendSpotifyRequest("play", {
         device_id: deviceId,
@@ -965,6 +1011,7 @@ $(document).ready(function () {
     }
   }
 
+  // Função para sincronizar o estado do player
   function syncPlayerState() {
     player
       .getCurrentState()
@@ -1001,9 +1048,11 @@ $(document).ready(function () {
   function updateRepeatButton() {
     const repeatIcon = repeatButton.find(".repeat-icon");
 
+    // Remove estado ativo e define título padrão
     repeatButton.removeClass("active");
     repeatButton.attr("title", "Modo de repetição: Desativado");
 
+    // Atualiza para modo ativo, se necessário
     if (currentRepeatMode === "track") {
       repeatButton.addClass("active");
       repeatButton.attr("title", "Modo de repetição: Ativado");
@@ -1017,6 +1066,7 @@ $(document).ready(function () {
       return;
     }
 
+    // Envia a requisição para configurar o modo de repetição
     sendSpotifyRequest("repeat_mode", {
       device_id: deviceId,
       state: state,
@@ -1041,18 +1091,19 @@ $(document).ready(function () {
 
   // Evento de clique no botão de repetição
   repeatButton.on("click", function () {
+    // Alterna entre os modos de repetição
     const nextMode = currentRepeatMode === "track" ? "off" : "track";
     setRepeatMode(nextMode);
   });
 
-  // Sincronizar o estado inicial do modo de repetição
+  // Função para sincronizar o modo de repetição inicial
   function syncRepeatMode() {
     if (!player) return;
     player
       .getCurrentState()
       .then((state) => {
         if (state && state.repeat_mode !== undefined) {
-          // Converte o estado numérico do Spotify SDK para string
+          // Mapeia o estado numérico do Spotify SDK para string
           const modeMap = {
             0: "off",
             2: "track",
@@ -1066,17 +1117,16 @@ $(document).ready(function () {
       });
   }
 
-  // Chamar a sincronização inicial ao conectar o player
-  player?.addListener("ready", ({device_id}) => {
-    deviceId = device_id
-     console.log("Dispositivo conectado, deviceId:", deviceId);
+  // Sincroniza o modo de repetição quando o dispositivo está pronto
+  player?.addListener("ready", ({ device_id }) => {
+    deviceId = device_id;
+    console.log("Dispositivo conectado, deviceId:", deviceId);
     syncRepeatMode();
   });
 
-  // Atualizar o estado do modo de repetição quando o estado do player mudar
+  // Atualiza o modo de repetição quando o estado do player muda
   player?.addListener("player_state_changed", (state) => {
     if (state && state.repeat_mode !== undefined) {
-      // Converte o estado numérico do Spotify SDK para string
       const modeMap = {
         0: "off",
         2: "track",
@@ -1086,21 +1136,20 @@ $(document).ready(function () {
     }
   });
 
-  // Configuração inicial do botão
+  // Configuração inicial do botão de repetição
   updateRepeatButton();
 
-  // Evento global de pressionamento da barra de espaço
+  // Evento global para a barra de espaço
   $(document).on("keydown", function (e) {
-    // Verifica se o foco está em um campo de entrada
-    const isTyping = $("input , textarea").is(":focus");
-
+    // Ignora se o foco está em um campo de entrada
+    const isTyping = $("input, textarea").is(":focus");
     if (e.code === "Space" && !isTyping) {
-      e.preventDefault(); // Impede a rolagem da página, mas apenas se não estiver digitando
+      e.preventDefault();
       togglePlayPause();
     }
   });
 
-  // Evento de clique no botão
+  // Evento de clique no botão de play/pause
   playAndPause.on("click", function () {
     togglePlayPause();
   });

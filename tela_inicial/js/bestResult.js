@@ -133,9 +133,6 @@ $(document).ready(function () {
     // Expor a função fetchBestResultAndTracks para ser chamada pelo searchHandler.js
     window.fetchBestResultAndTracks = fetchBestResultAndTracks
 
-  
-
-
 
 
     $(document).on('click', '.track-play-button', function (e) {

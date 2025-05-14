@@ -1,16 +1,23 @@
 <?php
+// Inicia a sessão para armazenar ou recuperar dados do usuário
 session_start();
 
+// Carrega as dependências gerenciadas pelo Composer (autoloader)
 require '../vendor/autoload.php';
 
+// Importa as classes necessárias do namespace
 use spotify\tela_inicial\library\Authenticate;
 use spotify\tela_inicial\library\SpotifyClient;
 
-
-
+// Cria uma instância do cliente Spotify
 $spotify = new SpotifyClient();
+
+// Gera o link de autenticação do Spotify (para login)
 $authUrl = $spotify->generateAuthLink();
+// Verifica se o token de acesso está presente na sessão e tenta configurá-lo
 $isAuthenticated = $spotify->setAccessTokenFromSession();
+
+// Se autenticado, obtém os dados do usuário atual
 $user = $isAuthenticated ? $spotify->getUser() : null;
 
 // Impedir o acesso à página se o usuário não estiver autenticado
@@ -18,10 +25,12 @@ if (!$isAuthenticated) {
     header('Location: firstPage.php');
     exit;
 }
+
+// Cria uma instância da classe responsável pela autenticação
 $auth = new Authenticate();
 
 
-
+// Verifica se a URL contém o parâmetro `logout` para encerrar a sessão
 if (isset($_GET['logout'])) {
     $authType = $_GET['auth'] ?? null;
     $auth->logout($authType);
@@ -38,8 +47,8 @@ if (isset($_GET['logout'])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="style.css">
-   <link rel="icon" type="image/png" href="img/spotify-logo.png">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="icon" type="image/png" href="img/spotify-logo.png">
 
     <script defer src="js/initialContent.js"></script>
     <script defer src="js/searchHandler.js"></script>
@@ -54,9 +63,9 @@ if (isset($_GET['logout'])) {
     <script defer src="js/hitParades.js"></script>
     <script defer src="js/newReleasesAlbums.js"></script>
     <script defer src="js/pageOfArtist.js"></script>
-   
-    <script defer src="https://sdk.scdn.co/spotify-player.js" ></script>
-    
+
+    <script defer src="https://sdk.scdn.co/spotify-player.js"></script>
+
 
 
 
@@ -96,36 +105,36 @@ if (isset($_GET['logout'])) {
                 </span>
 
 
-                 <div class="input7">
+                <div class="input7">
 
-                <span class="search">
-                    <svg role="img" aria-hidden="true">
-                        <path
-                            d="M10.533 1.27893C5.35215 1.27893 1.12598 5.41887 1.12598 10.5579C1.12598 15.697 5.35215 19.8369 10.533 19.8369C12.767 19.8369 14.8235 19.0671 16.4402 17.7794L20.7929 22.132C21.1834 22.5226 21.8166 22.5226 22.2071 22.132C22.5976 21.7415 22.5976 21.1083 22.2071 20.7178L17.8634 16.3741C19.1616 14.7849 19.94 12.7634 19.94 10.5579C19.94 5.41887 15.7138 1.27893 10.533 1.27893ZM3.12598 10.5579C3.12598 6.55226 6.42768 3.27893 10.533 3.27893C14.6383 3.27893 17.94 6.55226 17.94 10.5579C17.94 14.5636 14.6383 17.8369 10.533 17.8369C6.42768 17.8369 3.12598 14.5636 3.12598 10.5579Z">
-                        </path>
-                    </svg>
-                </span>
+                    <span class="search">
+                        <svg role="img" aria-hidden="true">
+                            <path
+                                d="M10.533 1.27893C5.35215 1.27893 1.12598 5.41887 1.12598 10.5579C1.12598 15.697 5.35215 19.8369 10.533 19.8369C12.767 19.8369 14.8235 19.0671 16.4402 17.7794L20.7929 22.132C21.1834 22.5226 21.8166 22.5226 22.2071 22.132C22.5976 21.7415 22.5976 21.1083 22.2071 20.7178L17.8634 16.3741C19.1616 14.7849 19.94 12.7634 19.94 10.5579C19.94 5.41887 15.7138 1.27893 10.533 1.27893ZM3.12598 10.5579C3.12598 6.55226 6.42768 3.27893 10.533 3.27893C14.6383 3.27893 17.94 6.55226 17.94 10.5579C17.94 14.5636 14.6383 17.8369 10.533 17.8369C6.42768 17.8369 3.12598 14.5636 3.12598 10.5579Z">
+                            </path>
+                        </svg>
+                    </span>
 
-                <input class="search-input" placeholder="O que você quer ouvir?">
+                    <input class="search-input" placeholder="O que você quer ouvir?">
 
 
-                <div class="vertical-line"></div>
+                    <div class="vertical-line"></div>
 
-                <span class="cest">
-                    <svg role="img" aria-hidden="true">
-                        <path d="M15 15.5c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2z"></path>
-                        <path
-                            d="M1.513 9.37A1 1 0 0 1 2.291 9h19.418a1 1 0 0 1 .979 1.208l-2.339 11a1 1 0 0 1-.978.792H4.63a1 1 0 0 1-.978-.792l-2.339-11a1 1 0 0 1 .201-.837zM3.525 11l1.913 9h13.123l1.913-9H3.525zM4 2a1 1 0 0 1 1-1h14a1 1 0 0 1 1 1v4h-2V3H6v3H4V2z">
-                        </path>
-                    </svg>
-                </span>
+                    <span class="cest">
+                        <svg role="img" aria-hidden="true">
+                            <path d="M15 15.5c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2z"></path>
+                            <path
+                                d="M1.513 9.37A1 1 0 0 1 2.291 9h19.418a1 1 0 0 1 .979 1.208l-2.339 11a1 1 0 0 1-.978.792H4.63a1 1 0 0 1-.978-.792l-2.339-11a1 1 0 0 1 .201-.837zM3.525 11l1.913 9h13.123l1.913-9H3.525zM4 2a1 1 0 0 1 1-1h14a1 1 0 0 1 1 1v4h-2V3H6v3H4V2z">
+                            </path>
+                        </svg>
+                    </span>
+                </div>
+
             </div>
 
-            </div>
 
 
 
-           
 
 
             <div class="perfil">
@@ -234,77 +243,7 @@ if (isset($_GET['logout'])) {
             </div>
 
 
-            <!--<div class="nav-filtro">-->
-            <!--<button class="nav-filtro-son">
-                        <span class="playlist">Playlists</span>
-                    </button>
 
-                    <button class="nav-filtro-son">
-                        <span class="artistas">Artistas</span>
-                    </button>
-
-                    <button class="nav-filtro-son">
-                        <span class="albuns">Álbuns</span>
-                    </button>
-
-                    <button class="nav-filtro-son">
-                        <span class="podcasts">Podcasts e programas</span>
-
-                    </button>-->
-
-            <!--<div class="general">
-                        <button class="button1" >
-
-                            <svg role="img" aria-hidden="true" viewBox="0 0 16 16">
-                                <path
-                                    d="M11.03.47a.75.75 0 0 1 0 1.06L4.56 8l6.47 6.47a.75.75 0 1 1-1.06 1.06L2.44 8 9.97.47a.75.75 0 0 1 1.06 0z">
-                                </path>
-                            </svg>
-
-                        </button>
-                        <button class="button2">
-
-                            <svg role="img" aria-hidden="true" viewBox="0 0 16 16">
-                                <path
-                                    d="M4.97.47a.75.75 0 0 0 0 1.06L11.44 8l-6.47 6.47a.75.75 0 1 0 1.06 1.06L13.56 8 6.03.47a.75.75 0 0 0-1.06 0z">
-                                </path>
-                            </svg>
-
-                        </button>
-
-                    </div>-->
-
-
-            <!--</div>-->
-            <!--<div class="searchBox">
-                    <span class="search2">
-                        <svg data-encore-id="icon" role="img" aria-hidden="true" viewBox="0 0 16 16">
-                            <path
-                                d="M7 1.75a5.25 5.25 0 1 0 0 10.5 5.25 5.25 0 0 0 0-10.5zM.25 7a6.75 6.75 0 1 1 12.096 4.12l3.184 3.185a.75.75 0 1 1-1.06 1.06L11.304 12.2A6.75 6.75 0 0 1 .25 7z">
-                            </path>
-                        </svg>
-                    </span>
-
-                    <div class="recentes">
-                        <button>
-                            <span class="re">
-                                Recentes
-                            </span>
-
-                            <span class="IconWrapper">
-                                <svg role="img" aria-hidden="true" viewBox="0 0 16 16">
-                                    <path
-                                        d="M15 14.5H5V13h10v1.5zm0-5.75H5v-1.5h10v1.5zM15 3H5V1.5h10V3zM3 3H1V1.5h2V3zm0 11.5H1V13h2v1.5zm0-5.75H1v-1.5h2v1.5z">
-                                    </path>
-                                </svg>
-
-                            </span>
-
-                        </button>
-
-                    </div>
-
-                </div>-->
         </nav>
         <div class="resize-border">
 
@@ -508,9 +447,6 @@ if (isset($_GET['logout'])) {
         </main>
 
 
-
-
-
     </div>
     <div class="media-control">
         <div class="content-info">
@@ -534,6 +470,7 @@ if (isset($_GET['logout'])) {
                 </button>
                 <button>
                     <svg class="back" role="img" aria-hidden="true">
+                        <title>Voltar</title>
                         <path d="M3.3 1a.7.7 0 0 1 .7.7v5.15l9.95-5.744a.7.7 0 0 1 1.05.606v12.575a.7.7 0 0 1-1.05.607L4 9.149V14.3a.7.7 0 0 1-.7.7H1.7a.7.7 0 0 1-.7-.7V1.7a.7.7 0 0 1 .7-.7h1.6z"></path>
                     </svg>
                 </button>
@@ -541,9 +478,11 @@ if (isset($_GET['logout'])) {
                 <button class="play-pause-button">
                     <span class="background-pause-and-play">
                         <svg class="pause" role="img" aria-hidden="true">
+                            <title>Pausar</title>
                             <path d="M2.7 1a.7.7 0 0 0-.7.7v12.6a.7.7 0 0 0 .7.7h2.6a.7.7 0 0 0 .7-.7V1.7a.7.7 0 0 0-.7-.7H2.7zm8 0a.7.7 0 0 0-.7.7v12.6a.7.7 0 0 0 .7.7h2.6a.7.7 0 0 0 .7-.7V1.7a.7.7 0 0 0-.7-.7h-2.6z"></path>
                         </svg>
                         <svg class="play" style="display: none;" role="img" aria-hidden="true">
+                            <title>Play</title>
                             <path d="M3 1.713a.7.7 0 0 1 1.05-.607l10.89 6.288a.7.7 0 0 1 0 1.212L4.05 14.894A.7.7 0 0 1 3 14.288V1.713z"></path>
                         </svg>
 
@@ -552,16 +491,14 @@ if (isset($_GET['logout'])) {
                 </button>
                 <button>
                     <svg class="next" role="img" aria-hidden="true">
+                        <title>Avançar</title>
                         <path d="M12.7 1a.7.7 0 0 0-.7.7v5.15L2.05 1.107A.7.7 0 0 0 1 1.712v12.575a.7.7 0 0 0 1.05.607L12 9.149V14.3a.7.7 0 0 0 .7.7h1.6a.7.7 0 0 0 .7-.7V1.7a.7.7 0 0 0-.7-.7h-1.6z"></path>
                     </svg>
                 </button>
-                <button class="repeat-button" title="Mode de repetição: Desativado" >
+                <button class="repeat-button" title="Mode de repetição: Desativado">
                     <svg class="repeat-icon" role="img" aria-hidden="true">
-                      
                         <path d="M0 4.75A3.75 3.75 0 0 1 3.75 1h8.5A3.75 3.75 0 0 1 16 4.75v5a3.75 3.75 0 0 1-3.75 3.75H9.81l1.018 1.018a.75.75 0 1 1-1.06 1.06L6.939 12.75l2.829-2.828a.75.75 0 1 1 1.06 1.06L9.811 12h2.439a2.25 2.25 0 0 0 2.25-2.25v-5a2.25 2.25 0 0 0-2.25-2.25h-8.5A2.25 2.25 0 0 0 1.5 4.75v5A2.25 2.25 0 0 0 3.75 12H5v1.5H3.75A3.75 3.75 0 0 1 0 9.75v-5z"></path>
                     </svg>
-                    <span class="repeat-mode-indicator" >1</span>
-
 
                 </button>
 
@@ -603,6 +540,7 @@ if (isset($_GET['logout'])) {
                 <div class="align-volume-bar">
                     <button>
                         <svg class="volume-icon" role="presentation" aria-label="Volume alto" aria-hidden="false">
+                            <title>Mudo</title>
                             <path d="M9.741.85a.75.75 0 0 1 .375.65v13a.75.75 0 0 1-1.125.65l-6.925-4a3.642 3.642 0 0 1-1.33-4.967 3.639 3.639 0 0 1 1.33-1.332l6.925-4a.75.75 0 0 1 .75 0zm-6.924 5.3a2.139 2.139 0 0 0 0 3.7l5.8 3.35V2.8l-5.8 3.35zm8.683 4.29V5.56a2.75 2.75 0 0 1 0 4.88z"></path>
                             <path d="M11.5 13.614a5.752 5.752 0 0 0 0-11.228v1.55a4.252 4.252 0 0 1 0 8.127v1.55z"></path>
                         </svg>

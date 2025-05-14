@@ -1,26 +1,33 @@
 <?php
+// Inicia a sessão para armazenar ou recuperar dados do usuário
 session_start();
 
+// Carrega as dependências gerenciadas pelo Composer (autoloader)
 require 'vendor/autoload.php';
 
+// Importa as classes necessárias do namespace
 use spotify\tela_inicial\library\Authenticate;
 use spotify\tela_inicial\library\SpotifyClient;
 
-
+// Cria uma instância do cliente Spotify
 $spotify = new SpotifyClient();
+
+// Gera o link de autenticação do Spotify (para login)
 $authUrl = $spotify->generateAuthLink();
+
+// Verifica se o token de acesso está presente na sessão e tenta configurá-lo
 $isAuthenticated = $spotify->setAccessTokenFromSession();
+
+// Se autenticado, obtém os dados do usuário atual
 $user = $isAuthenticated ? $spotify->getUser() : null;
+
+// Cria uma instância da classe responsável pela autenticação
 $auth = new Authenticate();
 
-
-
-
-
-
+// Verifica se a URL contém o parâmetro `logout` para encerrar a sessão
 if (isset($_GET['logout'])) {
-    $authType = $_GET['auth'] ?? null;
-    $auth->logout($authType);
+    $authType = $_GET['auth'] ?? null; // Tipo de autenticação (opcional)
+    $auth->logout($authType);          // Chama o método de logout apropriado
 }
 ?>
 

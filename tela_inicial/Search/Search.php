@@ -6,13 +6,17 @@ use spotify\tela_inicial\library\SpotifyClient;
 
 header('Content-Type: application/json');
 
+// Ativa compressão gzip se suportado pelo cliente
 if(isset($_SERVER['HTTP_ACCEPT_ENCODING']) && strpos($_SERVER['HTTP_ACCEPT_ENCODING'], 'gzip') !== false){
     ob_start('ob_gzhandler');
 }else{
     ob_start();
 }
 
-// Função para buscar com retentativa
+/**
+ * Função que realiza a busca no Spotify com tentativas de retentativa
+ * em caso de falhas por rate limit (429) ou erro de servidor (>=500).
+ */
 function searchWithRetry($spotify, $query, $types, $options, $retries = 0, $maxRetries = 3, $baseDelay = 1000)
 {
     $debugMessages = [];
@@ -23,9 +27,10 @@ function searchWithRetry($spotify, $query, $types, $options, $retries = 0, $maxR
     } catch (\Exception $e) {
         $statusCode = $e->getCode();
         $debugMessages[] = "Erro $statusCode na busca: " . $e->getMessage();
-        if ($statusCode === 429 || $statusCode >= 500) { // Rate limit ou erro de servidor
+        // Se erro for 429 ou erro de servidor
+        if ($statusCode === 429 || $statusCode >= 500) {
             if ($retries < $maxRetries) {
-                $delay = $baseDelay * pow(2, $retries); // Exponential backoff
+                $delay = $baseDelay * pow(2, $retries); // Atraso exponencial
                 $debugMessages[] =  "Retentando busca ($retries/$maxRetries) após {$delay}ms";
                 usleep($delay * 1000); // Converte ms para microsegundos
                 $retryResult = searchWithRetry($spotify, $query, $types, $options, $retries + 1, $maxRetries, $baseDelay);
@@ -37,22 +42,23 @@ function searchWithRetry($spotify, $query, $types, $options, $retries = 0, $maxR
     }
 }
 
-// Configuração do cache (usando cache em arquivo)
-$cacheTTL = 3600; // 60 minutos
-$cacheDir = __DIR__ . '/cache'; // Diretório para cache em arquivo
+// Configurações de cache
+$cacheTTL = 3600; // Tempo de validade: 1 hora
+$cacheDir = __DIR__ . '/cache';
 $debugMessages = [];
 
-// Cria o diretório de cache, se não existir
+// Cria o diretório de cache se não existir
 if (!is_dir($cacheDir)) {
     if (!mkdir($cacheDir, 0755, true)) {
         $debugMessages[] = "Falha ao criar diretório de cache: $cacheDir";
     }
 }
 
+// Instancia o cliente do Spotify
 $spotify = new SpotifyClient();
 $tokenInSession = $_SESSION['spotify_access_token'] ?? 'Não encontrado';
 
-
+// Verifica se o token está disponível na sessão
 if (!$spotify->setAccessTokenFromSession()) {
     echo json_encode([
         'success' => false,
@@ -65,14 +71,13 @@ if (!$spotify->setAccessTokenFromSession()) {
     ob_end_flush();
     exit;
 }
+
+// Lê os dados JSON recebidos via POST
 $data = json_decode(file_get_contents('php://input'), true);
 $query = $data['query'] ?? '';
-
-
-
 $cleanQuery = trim($query);
 
-// Verificação mínima para evitar consultas vazias
+// Valida se a consulta está vazia
 if(empty($cleanQuery)){
     echo json_encode([
         'success' => false,
@@ -83,11 +88,11 @@ if(empty($cleanQuery)){
     exit;
 }
 
-// Gera uma chave única para o cache
+// Gera uma chave de cache única baseada na consulta
 $cachekey = 'search_' .md5($cleanQuery);
 $cacheFile = "$cacheDir/$cachekey.json";
 
-// Tenta obter do cache
+// Verifica se há resultado no cache e ainda é válido
 if(file_exists($cacheFile) && (time() - filemtime($cacheFile)) < $cacheTTL){
     $cachedResults = json_decode(file_get_contents($cacheFile), true);
     $debugMessages[] = "Resultados obtidos do cache (arquivo) para query: $cleanQuery";
@@ -101,12 +106,11 @@ if(file_exists($cacheFile) && (time() - filemtime($cacheFile)) < $cacheTTL){
 }
 
 try {
-    // Faz uma única busca para todos os tipos
+    // Realiza a busca nos principais tipos
     $searchResult = searchWithRetry($spotify, $cleanQuery, ['artist', 'album', 'playlist', 'show', 'track'], ['limit' => 10]);
     $searchResults = $searchResult['result'];
     $debugMessages = array_merge($debugMessages, $searchResult['debug']);
     $results = [];
-
 
     // Processa artistas
     $results['artists'] = array_map(function ($artist) {
@@ -130,10 +134,12 @@ try {
         ];
     }, $searchResults->albums->items);
 
-    // Processa playlists
+    // Filtra playlists válidas
     $validPlaylists = array_filter($searchResults->playlists->items, function ($playlist) {
         return $playlist !== null && isset($playlist->name);
     });
+
+    // Processa playlists
     $results['playlists'] = array_map(function ($playlist) {
         return [
             'id' => $playlist->id,
@@ -152,7 +158,7 @@ try {
         ];
     }, $searchResults->shows->items);
 
-    // Processa tracks
+    // Processa faixas (tracks)
     $results['tracks'] = array_map(function ($track) {
         return [
             'id' => $track->id,
@@ -166,8 +172,10 @@ try {
         ];
     }, $searchResults->tracks->items);
 
-    // Determina o "best_result"
+    // Monta todos os itens para determinar o "melhor resultado"
     $allItems = [];
+
+    // Adiciona artistas
     foreach ($searchResults->artists->items as $artist) {
         $allItems[] = [
             'type' => 'artist',
@@ -178,6 +186,8 @@ try {
             'artists' => [['id' => $artist->id, 'name' => $artist->name]]
         ];
     }
+
+    // Adiciona faixas
     foreach ($searchResults->tracks->items as $track) {
         $allItems[] = [
             'type' => 'track',
@@ -191,6 +201,8 @@ try {
             'duration_ms' => $track->duration_ms
         ];
     }
+
+    // Adiciona álbuns
     foreach ($searchResults->albums->items as $album) {
         $allItems[] = [
             'type' => 'album',
@@ -203,6 +215,8 @@ try {
             }, $album->artists)
         ];
     }
+
+    // Adiciona playlists
     foreach ($validPlaylists as $playlist) {
         $allItems[] = [
             'type' => 'playlist',
@@ -211,6 +225,8 @@ try {
             'images' => $playlist->images ?? []
         ];
     }
+
+    // Adiciona shows/podcasts
     foreach ($searchResults->shows->items as $show) {
         $allItems[] = [
             'type' => 'show',
@@ -221,12 +237,10 @@ try {
         ];
     }
 
+    // Define o melhor resultado (primeiro da lista combinada)
     $results['best_result'] = !empty($allItems) ? $allItems[0] : null;
 
-
-
-
-    // Armazena no cache
+    // Armazena resultado no cache
     if (is_writable($cacheDir)) {
         file_put_contents($cacheFile, json_encode($results));
         $debugMessages[] = "Resultados armazenados no cache (arquivo) para query: $cleanQuery";
@@ -234,12 +248,14 @@ try {
         $debugMessages[] = "Falha ao armazenar no cache: diretório $cacheDir não é gravável";
     }
 
+    // Retorna resposta JSON
     echo json_encode([
         'success' => true,
         'results' => $results,
         'debug' => $debugMessages
     ]);
 } catch (\Exception $e) {
+    // Retorna erro em caso de falha
     echo json_encode([
         'success' => false,
         'error' => $e->getMessage(),
@@ -247,4 +263,5 @@ try {
     ]);
 }
 
+// Libera o buffer de saída
 ob_end_flush();
